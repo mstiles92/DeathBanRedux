@@ -25,12 +25,22 @@ package com.mstiles92.plugins.deathbanredux
 
 import org.bukkit.plugin.java.JavaPlugin
 import com.mstiles92.plugins.deathbanredux.config.Config
+import org.mcstats.Metrics
+import java.io.IOException
+import org.bukkit.ChatColor
 
 class DeathBanRedux() : JavaPlugin() {
     val config = Config(this)
 
     override fun onEnable() {
         config.load()
+
+        try {
+            val metrics = Metrics(this)
+            metrics.start()
+        } catch (e: IOException) {
+            getLogger().warning("${ChatColor.RED}Error starting metrics!")
+        }
     }
 
     override fun onDisable() {

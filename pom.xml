@@ -63,6 +63,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.jetbrains.kotlin:*</include>
+                                    <include>org.mcstats.bukkit:metrics</include>
                                     <include>com.mstiles92.plugins:StilesLib</include>
                                 </includes>
                             </artifactSet>
@@ -97,6 +98,10 @@
 
     <repositories>
         <repository>
+            <id>mcstats-repo</id>
+            <url>http://repo.mcstats.org/content/repositories/public/</url>
+        </repository>
+        <repository>
             <id>mstiles92-repo</id>
             <url>https://mstiles92.com/artifactory/mstiles92-plugins</url>
         </repository>
@@ -112,6 +117,11 @@
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
             <version>${bukkit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mcstats.bukkit</groupId>
+            <artifactId>metrics</artifactId>
+            <version>R7</version>
         </dependency>
         <dependency>
             <groupId>com.mstiles92.plugins</groupId>
