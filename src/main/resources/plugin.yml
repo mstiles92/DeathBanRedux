@@ -1,0 +1,6 @@
+name: DeathBanRedux
+author: mstiles92
+description:
+main: com.mstiles92.plugins.deathbanredux.DeathBanRedux
+version: '${project.version}'
+load: POSTWORLD
