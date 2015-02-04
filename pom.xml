@@ -19,6 +19,9 @@
     <build>
         <defaultGoal>clean package</defaultGoal>
 
+        <sourceDirectory>${basedir}/src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>${basedir}/src/test/kotlin</testSourceDirectory>
+
         <resources>
             <resource>
                 <targetPath>.</targetPath>
