@@ -12,7 +12,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <java.version>1.7</java.version>
-        <kotlin.version>0.10.195</kotlin.version>
+        <kotlin.version>0.11.91.1</kotlin.version>
         <bukkit.version>1.7.10-R0.1-SNAPSHOT</bukkit.version>
     </properties>
 
@@ -64,6 +64,7 @@
                                 <includes>
                                     <include>org.jetbrains.kotlin:*</include>
                                     <include>org.mcstats.bukkit:metrics</include>
+                                    <include>org.glassfish:javax.json</include>
                                     <include>com.mstiles92.plugins:StilesLib</include>
                                 </includes>
                             </artifactSet>
@@ -122,6 +123,11 @@
             <groupId>org.mcstats.bukkit</groupId>
             <artifactId>metrics</artifactId>
             <version>R7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>1.0.4</version>
         </dependency>
         <dependency>
             <groupId>com.mstiles92.plugins</groupId>
