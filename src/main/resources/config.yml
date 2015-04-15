@@ -1,0 +1,56 @@
+#######################################################################################################################
+# +-----------------------------------------------------------------------------------------------------------------+ #
+# |                                                  DeathBanRedux                                                  | #
+# +-----------------------------------------------------------------------------------------------------------------+ #
+#######################################################################################################################
+
+# Activate the plugin's ban feature upon death. (true/false)
+Enabled: true
+
+# Default time a player should be banned.
+# All valid units: y = years, mo = months, w = weeks, d = days, h = hours, m = minutes, s = seconds
+# For example, "1h30m" would ban a player for 1 hour and 30 minutes
+Ban-Time: 12h
+
+# Message displayed to a player when they are kicked from the server for dieing.
+Death-Message: You have died! You are now banned for %bantimeleft%.
+
+# Message displayed to a player when they try to log in while they are still banned.
+Early-Message: Your ban is not up for another %bantimeleft%.
+
+# Number of ticks to wait until the player is kicked after dieing.
+# Do not change this unless you know exactly what you are doing and have a good reason.
+Tick-Delay: 15
+
+# The number of revival credits players are given when they join the server for the first time.
+Starting-Credits: 0
+
+# Log extra data to the console, for debugging purposes. (true/false)
+Verbose: false
+
+# Enable update checking for new versions of the plugin. A notification message will be displayed in the console when
+# a new version is found, and OPs and players with the deathban.receivealerts permission will be notified upon joining
+# the server of new versions. Update information can also be viewed with the "/deathban version" command.
+Check-for-Updates: true
+
+# Classes used to give special players (donators, higher ranks, etc) special ban times, different from the default time
+# set above. They should be created in the form of:
+#
+#   Death-Classes:
+#       Donator:
+#           Ban-Time: 1h
+#           Death-Message: Thank you for donating! You are now banned for a reduced time of %bantimeleft%.
+#       VIP:
+#           Ban-Time: 15m
+#           Death-Message: Thank you for being awesome! You are only banned for %bantimeleft%.
+#
+# These classes can be assigned to players/groups using a permissions plugin by granting them the
+# "deathban.class.<class name>" permission.
+# For example, to grant the Donator class in the example above, grant the deathban.class.Donator permission.
+Death-Classes:
+    Donator:
+        Ban-Time: 1h
+        Death-Message: Thank you for donating! You are now banned for a reduced time of %bantimeleft%.
+    VIP:
+        Ban-Time: 15m
+        Death-Message: Thank you for being awesome! You are only banned for %bantimeleft%.
