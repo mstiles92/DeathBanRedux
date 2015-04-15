@@ -24,17 +24,29 @@
 package com.mstiles92.plugins.deathbanredux
 
 import com.mstiles92.plugins.deathbanredux.config.Config
+import com.mstiles92.plugins.deathbanredux.data.PlayerDataStore
 import org.bukkit.ChatColor
 import org.bukkit.plugin.java.JavaPlugin
 import org.mcstats.Metrics
+import java.io.File
 import java.io.IOException
 
 class DeathBanRedux() : JavaPlugin() {
 
     override fun onEnable() {
+        saveDefaultConfig()
         Config.load(this)
 
+        try {
+            val jsonFile = File(getDataFolder(), "data.json")
 
+            if (!jsonFile.createNewFile()) {
+                // Do not load from file if it was just created, as it will be empty.
+                PlayerDataStore.load(jsonFile)
+            }
+        } catch (e: IOException) {
+            getLogger().warning("${ChatColor.RED}Error loading JSON data file!")
+        }
 
         try {
             val metrics = Metrics(this)
@@ -46,5 +58,13 @@ class DeathBanRedux() : JavaPlugin() {
 
     override fun onDisable() {
         Config.save(this)
+
+        try {
+            val jsonFile = File(getDataFolder(), "data.json")
+
+            PlayerDataStore.save(jsonFile)
+        } catch (e: IOException) {
+            getLogger().warning("${ChatColor.RED}Error saving JSON data file!")
+        }
     }
 }
