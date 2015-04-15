@@ -28,12 +28,13 @@ import com.mstiles92.plugins.deathbanredux.data.DeathClass
 import java.util.ArrayList
 import java.util.HashMap
 
-class Config(val plugin: DeathBanRedux) {
-    val config = plugin.getConfig();
+public object Config {
     private val settings = HashMap<String, Any>()
-    val deathClasses = ArrayList<DeathClass>()
+    private val deathClasses = ArrayList<DeathClass>()
 
-    fun load() {
+    fun load(plugin: DeathBanRedux) {
+        val config = plugin.getConfig()
+
         settings["enabled"] = config.getBoolean("Enabled", true)
         settings["banTime"] = config.getString("Ban-Time", "12h")
         settings["deathMessage"] = config.getString("Death-Message", "You have died! You are now banned for %bantimeleft%.")
@@ -44,10 +45,12 @@ class Config(val plugin: DeathBanRedux) {
         settings["updateChecking"] = config.getBoolean("Check-for-Updates", true)
 
         val section = config.getConfigurationSection("Death-Classes")
-        section?.getKeys(false)?.forEach { it -> deathClasses.add(DeathClass(it, section.getString("${it}.Ban-Time"), section.getString("${it}.Death-Message"))) }
+        section?.getKeys(false)?.forEach { it ->
+            deathClasses.add(DeathClass(it, section.getString("${it}.Ban-Time"), section.getString("${it}.Death-Message"))) }
     }
 
-    fun save() {
+    fun save(plugin: DeathBanRedux) {
+        val config = plugin.getConfig()
         settings.forEach { it -> config.set(it.getKey(), it.getValue()) }
         plugin.saveConfig()
     }

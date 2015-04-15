@@ -30,10 +30,11 @@ import org.mcstats.Metrics
 import java.io.IOException
 
 class DeathBanRedux() : JavaPlugin() {
-    val config = Config(this)
 
     override fun onEnable() {
-        config.load()
+        Config.load(this)
+
+
 
         try {
             val metrics = Metrics(this)
@@ -44,6 +45,6 @@ class DeathBanRedux() : JavaPlugin() {
     }
 
     override fun onDisable() {
-        config.save()
+        Config.save(this)
     }
 }
