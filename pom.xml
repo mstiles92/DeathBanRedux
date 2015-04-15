@@ -13,7 +13,7 @@
 
         <java.version>1.7</java.version>
         <kotlin.version>0.11.91.1</kotlin.version>
-        <bukkit.version>1.7.10-R0.1-SNAPSHOT</bukkit.version>
+        <bukkit.version>1.7.9-R0.2</bukkit.version>
     </properties>
 
     <build>
@@ -64,7 +64,7 @@
                                 <includes>
                                     <include>org.jetbrains.kotlin:*</include>
                                     <include>org.mcstats.bukkit:metrics</include>
-                                    <include>org.glassfish:javax.json</include>
+                                    <include>com.google.code.gson:gson</include>
                                     <include>com.mstiles92.plugins:StilesLib</include>
                                 </includes>
                             </artifactSet>
@@ -80,14 +80,14 @@
                 <executions>
                     <execution>
                         <id>compile</id>
-                        <phase>process-sources</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>compile</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>test-compile</id>
-                        <phase>process-test-sources</phase>
+                        <phase>test-compile</phase>
                         <goals>
                             <goal>test-compile</goal>
                         </goals>
@@ -98,6 +98,10 @@
     </build>
 
     <repositories>
+        <repository>
+            <id>bukkit-repo</id>
+            <url>http://repo.bukkit.org/content/groups/public</url>
+        </repository>
         <repository>
             <id>mcstats-repo</id>
             <url>http://repo.mcstats.org/content/repositories/public/</url>
@@ -115,19 +119,9 @@
             <version>${bukkit.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>craftbukkit</artifactId>
-            <version>${bukkit.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.mcstats.bukkit</groupId>
             <artifactId>metrics</artifactId>
             <version>R7</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.json</artifactId>
-            <version>1.0.4</version>
         </dependency>
         <dependency>
             <groupId>com.mstiles92.plugins</groupId>
@@ -138,6 +132,35 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
             <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>1.6.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>1.6.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

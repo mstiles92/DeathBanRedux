@@ -23,16 +23,22 @@
 
 package com.mstiles92.plugins.deathbanredux.data
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import org.apache.commons.io.IOUtils
 import org.bukkit.entity.Player
+import java.io.File
+import java.io.FileReader
+import java.io.FileWriter
 import java.util.HashMap
 import java.util.UUID
 
 public object PlayerDataStore {
-    private val instances = HashMap<UUID, PlayerData>();
+    private var instances = HashMap<UUID, PlayerData>();
 
     fun get(player: Player) : PlayerData {
         if (instances.containsKey(player.getUniqueId())) {
-            val data = instances.get(player.getUniqueId())
+            val data = instances[player.getUniqueId()]
             data.lastSeenName = player.getName()
             return data
         } else {
@@ -43,10 +49,23 @@ public object PlayerDataStore {
     }
 
     fun get(uuid: UUID) : PlayerData? {
-        return instances.get(uuid)
+        return instances[uuid]
     }
 
     fun get(username: String) : PlayerData? {
         return instances.values().firstOrNull { it -> it.lastSeenName.equalsIgnoreCase(username) }
+    }
+
+    fun save(file: File, pretty: Boolean = true) {
+        val gson = if (pretty) GsonBuilder().setPrettyPrinting().create() else Gson()
+
+        IOUtils.write(gson.toJson(instances), FileWriter(file))
+    }
+
+    fun load(file: File) {
+        val gson = Gson()
+        val jsonString = IOUtils.toString(FileReader(file))
+
+        instances = gson.fromJson(jsonString, instances.javaClass)
     }
 }
