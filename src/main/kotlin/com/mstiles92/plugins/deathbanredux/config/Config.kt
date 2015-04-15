@@ -24,9 +24,9 @@
 package com.mstiles92.plugins.deathbanredux.config
 
 import com.mstiles92.plugins.deathbanredux.DeathBanRedux
-import java.util.HashMap
 import com.mstiles92.plugins.deathbanredux.data.DeathClass
 import java.util.ArrayList
+import java.util.HashMap
 
 class Config(val plugin: DeathBanRedux) {
     val config = plugin.getConfig();

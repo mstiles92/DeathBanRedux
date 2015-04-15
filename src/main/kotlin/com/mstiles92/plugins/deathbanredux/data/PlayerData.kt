@@ -23,10 +23,7 @@
 
 package com.mstiles92.plugins.deathbanredux.data
 
-import org.bukkit.entity.Player
 import java.util.UUID
-import org.bukkit.scheduler.BukkitRunnable
-import java.util.HashSet
 
 data class PlayerData(val uuid: UUID, var lastSeenName: String, var revivalCredits: Int = 0) {
 
