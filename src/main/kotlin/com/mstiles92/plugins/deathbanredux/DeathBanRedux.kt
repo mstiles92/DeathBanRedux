@@ -23,15 +23,20 @@
 
 package com.mstiles92.plugins.deathbanredux
 
+import com.mstiles92.plugins.deathbanredux.commands.DeathbanCommandHandler
 import com.mstiles92.plugins.deathbanredux.config.Config
 import com.mstiles92.plugins.deathbanredux.data.PlayerDataStore
+import com.mstiles92.plugins.stileslib.commands.CommandRegistry
 import org.bukkit.ChatColor
+import org.bukkit.command.Command
+import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
 import org.mcstats.Metrics
 import java.io.File
 import java.io.IOException
 
 class DeathBanRedux() : JavaPlugin() {
+    val commandRegistry = CommandRegistry(this)
 
     override fun onEnable() {
         saveDefaultConfig()
@@ -47,6 +52,8 @@ class DeathBanRedux() : JavaPlugin() {
         } catch (e: IOException) {
             getLogger().warning("${ChatColor.RED}Error loading JSON data file!")
         }
+
+        commandRegistry.registerCommands(DeathbanCommandHandler())
 
         try {
             val metrics = Metrics(this)
@@ -66,5 +73,9 @@ class DeathBanRedux() : JavaPlugin() {
         } catch (e: IOException) {
             getLogger().warning("${ChatColor.RED}Error saving JSON data file!")
         }
+    }
+
+    override fun onCommand(sender: CommandSender?, command: Command?, label: String?, args: Array<out String>?): Boolean {
+        return commandRegistry.handleCommand(sender, command, label, args)
     }
 }

@@ -24,7 +24,6 @@
 package com.mstiles92.plugins.deathbanredux.data
 
 import java.util.Calendar
-import java.util.UUID
 
 data class PlayerData(var lastSeenName: String, var revivalCredits: Int = 0, var banTime: Long = 0) {
 
