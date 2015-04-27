@@ -23,8 +23,29 @@
 
 package com.mstiles92.plugins.deathbanredux.data
 
+import java.util.Calendar
 import java.util.UUID
 
 data class PlayerData(var lastSeenName: String, var revivalCredits: Int = 0, var banTime: Long = 0) {
 
+    fun getUnbanCalendar() : Calendar {
+        val calendar = Calendar.getInstance()
+        calendar.setTimeInMillis(banTime)
+        return calendar
+    }
+
+    fun isCurrentlyBanned() : Boolean {
+        if (banTime == 0L) {
+            return false
+        } else if (Calendar.getInstance().after(getUnbanCalendar())) {
+            resetBanTime()
+            return false
+        } else {
+            return true
+        }
+    }
+
+    fun resetBanTime() {
+        banTime = 0L
+    }
 }
