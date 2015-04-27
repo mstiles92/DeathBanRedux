@@ -25,6 +25,6 @@ package com.mstiles92.plugins.deathbanredux.data
 
 import java.util.UUID
 
-data class PlayerData(val uuid: UUID, var lastSeenName: String, var revivalCredits: Int = 0) {
+data class PlayerData(var lastSeenName: String, var revivalCredits: Int = 0, var banTime: Long = 0) {
 
 }
