@@ -25,6 +25,7 @@ package com.mstiles92.plugins.deathbanredux.data
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import org.apache.commons.io.IOUtils
 import org.bukkit.entity.Player
 import java.io.File
@@ -34,22 +35,22 @@ import java.util.HashMap
 import java.util.UUID
 
 public object PlayerDataStore {
-    private var instances = HashMap<UUID, PlayerData>();
+    private var instances = HashMap<String, PlayerData>();
 
     fun get(player: Player) : PlayerData {
-        if (instances.containsKey(player.getUniqueId())) {
-            val data = instances[player.getUniqueId()]
+        if (instances.containsKey(player.getUniqueId().toString())) {
+            val data = instances[player.getUniqueId().toString()]
             data.lastSeenName = player.getName()
             return data
         } else {
-            val data = PlayerData(player.getUniqueId(), player.getName())
-            instances.put(player.getUniqueId(), data)
+            val data = PlayerData(player.getName())
+            instances.put(player.getUniqueId().toString(), data)
             return data
         }
     }
 
     fun get(uuid: UUID) : PlayerData? {
-        return instances[uuid]
+        return instances[uuid.toString()]
     }
 
     fun get(username: String) : PlayerData? {
@@ -59,13 +60,18 @@ public object PlayerDataStore {
     fun save(file: File, pretty: Boolean = true) {
         val gson = if (pretty) GsonBuilder().setPrettyPrinting().create() else Gson()
 
-        IOUtils.write(gson.toJson(instances), FileWriter(file))
+        val writer = FileWriter(file)
+        IOUtils.write(gson.toJson(instances), writer)
+        writer.close()
     }
 
     fun load(file: File) {
         val gson = Gson()
-        val jsonString = IOUtils.toString(FileReader(file))
 
-        instances = gson.fromJson(jsonString, instances.javaClass)
+        val reader = FileReader(file)
+        val jsonString = IOUtils.toString(reader)
+        reader.close()
+
+        instances = gson.fromJson(jsonString, object : TypeToken<HashMap<String, PlayerData>>(){}.getType()) ?: instances
     }
 }
