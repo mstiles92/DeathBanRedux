@@ -122,7 +122,7 @@ public class DeathbanCommandHandler : CommandHandler {
         }
     }
 
-    Command(name = "deathban.status", aliases = array("db.unban", "hdb.unban"), permission = "deathban.status")
+    Command(name = "deathban.status", aliases = array("db.status", "hdb.status"), permission = "deathban.status")
     fun handleStatus(args: Arguments) {
         if (args.getArgs().size() < 1) {
             args.getSender().sendMessage("${errorTag} You must specify a player!")
