@@ -32,7 +32,7 @@ public class LoginListener : Listener {
 
     EventHandler fun onPlayerLogin(event: PlayerLoginEvent) {
         val player = event.getPlayer()
-        val data = PlayerDataStore.get(player)
+        val data = PlayerDataStore[player]
 
         if (data.isCurrentlyBanned()) {
             event.disallow(PlayerLoginEvent.Result.KICK_BANNED, "You are banned!")

@@ -39,7 +39,7 @@ public class DeathbanCommandHandler : CommandHandler {
     private val tag = "${ChatColor.BLUE}[DeathBanRedux]${ChatColor.RESET}"
     private val errorTag = "${ChatColor.BLUE}[DeathBanRedux]${ChatColor.RED}"
 
-    Command(name = "deathban", aliases = array("db", "hdb"), permission = "deathban.display")
+    Command(name = "deathban", aliases = arrayOf("db", "hdb"), permission = "deathban.display")
     fun handleDefault(args: Arguments) {
         args.getSender().sendMessage("${ChatColor.GREEN}====[DeathBanRedux Help]====")
         args.getSender().sendMessage("${ChatColor.GREEN}<x> ${ChatColor.GREEN}specifies a required parameter, while ${ChatColor.GREEN}[x] ${ChatColor.GREEN}is an optional parameter.")
@@ -56,7 +56,7 @@ public class DeathbanCommandHandler : CommandHandler {
 
     }
 
-    Command(name = "deathban.enable", aliases = array("db.enable", "hdb.enable"), permission = "deathban.enable")
+    Command(name = "deathban.enable", aliases = arrayOf("db.enable", "hdb.enable"), permission = "deathban.enable")
     fun handleEnable(args: Arguments) {
         Config.setEnabled(true)
         args.getSender().sendMessage("${tag} Enabled!")
@@ -68,13 +68,13 @@ public class DeathbanCommandHandler : CommandHandler {
         }
     }
 
-    Command(name = "deathban.disable", aliases = array("db.disable", "hdb.disable"), permission = "deathban.enable")
+    Command(name = "deathban.disable", aliases = arrayOf("db.disable", "hdb.disable"), permission = "deathban.enable")
     fun handleDisable(args: Arguments) {
         Config.setEnabled(false)
         args.getSender().sendMessage("${tag} Disabled!")
     }
 
-    Command(name = "deathban.ban", aliases = array("db.ban", "hdb.ban"), permission = "deathban.ban")
+    Command(name = "deathban.ban", aliases = arrayOf("db.ban", "hdb.ban"), permission = "deathban.ban")
     fun handleBan(args: Arguments) {
         if (args.getArgs().size() < 1) {
             args.getSender().sendMessage("${errorTag} You must specify a player!")
@@ -104,7 +104,7 @@ public class DeathbanCommandHandler : CommandHandler {
         }
     }
 
-    Command(name = "deathban.unban", aliases = array("db.unban", "hdb.unban"), permission = "deathban.unban")
+    Command(name = "deathban.unban", aliases = arrayOf("db.unban", "hdb.unban"), permission = "deathban.unban")
     fun handleUnban(args: Arguments) {
         if (args.getArgs().size() < 1) {
             args.getSender().sendMessage("${errorTag} You must specify a player.")
@@ -122,7 +122,7 @@ public class DeathbanCommandHandler : CommandHandler {
         }
     }
 
-    Command(name = "deathban.status", aliases = array("db.status", "hdb.status"), permission = "deathban.status")
+    Command(name = "deathban.status", aliases = arrayOf("db.status", "hdb.status"), permission = "deathban.status")
     fun handleStatus(args: Arguments) {
         if (args.getArgs().size() < 1) {
             args.getSender().sendMessage("${errorTag} You must specify a player!")

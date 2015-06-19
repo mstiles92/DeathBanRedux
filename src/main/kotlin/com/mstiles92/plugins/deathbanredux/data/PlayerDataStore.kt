@@ -54,7 +54,7 @@ public object PlayerDataStore {
     }
 
     fun get(username: String) : PlayerData? {
-        return instances.values().firstOrNull { it -> it.lastSeenName.equalsIgnoreCase(username) }
+        return instances.values().firstOrNull { it -> it.lastSeenName.equals(username, ignoreCase = true) }
     }
 
     fun save(file: File, pretty: Boolean = true) {

@@ -42,15 +42,15 @@ fun String.replaceMessageVariables(data: PlayerData) : String {
     val now = Calendar.getInstance()
     val unbanTime = data.getUnbanCalendar()
 
-    var message = this.replaceAll("%player%", data.lastSeenName)
+    var message = this.replace("%player%".toRegex(), data.lastSeenName)
 
-    message = message.replaceAll("%currenttime%", timeFormat.format(now.getTime()))
-    message = message.replaceAll("%currentdate%", dateFormat.format(now.getTime()))
+    message = message.replace("%currenttime%".toRegex(), timeFormat.format(now.getTime()))
+    message = message.replace("%currentdate%".toRegex(), dateFormat.format(now.getTime()))
 
     if (data.isCurrentlyBanned()) {
-        message = message.replaceAll("%unbantime%", timeFormat.format(unbanTime.getTime()))
-        message = message.replaceAll("%unbandate%", dateFormat.format(unbanTime.getTime()))
-        message = message.replaceAll("%bantimeleft%", CalendarUtils.buildTimeDifference(now, unbanTime))
+        message = message.replace("%unbantime%".toRegex(), timeFormat.format(unbanTime.getTime()))
+        message = message.replace("%unbandate%".toRegex(), dateFormat.format(unbanTime.getTime()))
+        message = message.replace("%bantimeleft%".toRegex(), CalendarUtils.buildTimeDifference(now, unbanTime))
     }
 
     return message
