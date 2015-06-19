@@ -26,32 +26,18 @@ package com.mstiles92.plugins.deathbanredux.listeners
 import com.mstiles92.plugins.deathbanredux.data.PlayerDataStore
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerLoginEvent
-import java.util.Calendar
 
 public class LoginListener : Listener {
-
-    EventHandler fun onPlayerPreLogin(event: AsyncPlayerPreLoginEvent) {
-        val data = PlayerDataStore.get(event.getUniqueId())
-
-        if (data == null) {
-            event.allow()
-            return
-        }
-
-        if (data.getUnbanCalendar().after(Calendar.getInstance())) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, "You are banned!")
-        } else {
-            data.resetBanTime()
-            event.allow()
-        }
-    }
 
     EventHandler fun onPlayerLogin(event: PlayerLoginEvent) {
         val player = event.getPlayer()
         val data = PlayerDataStore.get(player)
 
-        player.sendMessage("You have ${data.revivalCredits} revival credits remaining.")
+        if (data.isCurrentlyBanned()) {
+            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, "You are banned!")
+        } else {
+            player.sendMessage("You have ${data.revivalCredits} revival credits remaining.")
+        }
     }
 }
