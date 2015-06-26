@@ -34,7 +34,7 @@ import java.io.FileWriter
 import java.util.HashMap
 import java.util.UUID
 
-public object PlayerDataStore {
+public class PlayerDataStore() {
     private var instances = HashMap<String, PlayerData>();
 
     fun get(player: Player) : PlayerData {

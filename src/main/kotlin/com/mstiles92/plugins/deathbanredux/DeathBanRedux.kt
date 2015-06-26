@@ -37,26 +37,28 @@ import java.io.File
 import java.io.IOException
 
 class DeathBanRedux() : JavaPlugin() {
-    val commandRegistry = CommandRegistry(this)
+    val config = Config()
+    val playerDataStore = PlayerDataStore()
+    private val commandRegistry = CommandRegistry(this)
 
     override fun onEnable() {
         saveDefaultConfig()
-        Config.load(this)
+        config.load(this)
 
         try {
             val jsonFile = File(getDataFolder(), "data.json")
 
             if (!jsonFile.createNewFile()) {
                 // Do not load from file if it was just created, as it will be empty.
-                PlayerDataStore.load(jsonFile)
+                playerDataStore.load(jsonFile)
             }
         } catch (e: IOException) {
             getLogger().warning("${ChatColor.RED}Error loading JSON data file!")
         }
 
-        commandRegistry.registerCommands(DeathbanCommandHandler())
+        commandRegistry.registerCommands(DeathbanCommandHandler(this))
 
-        getServer().getPluginManager().registerEvents(LoginListener(), this)
+        LoginListener(this).register()
 
         try {
             val metrics = Metrics(this)
@@ -67,12 +69,12 @@ class DeathBanRedux() : JavaPlugin() {
     }
 
     override fun onDisable() {
-        Config.save(this)
+        config.save(this)
 
         try {
             val jsonFile = File(getDataFolder(), "data.json")
 
-            PlayerDataStore.save(jsonFile)
+            playerDataStore.save(jsonFile)
         } catch (e: IOException) {
             getLogger().warning("${ChatColor.RED}Error saving JSON data file!")
         }

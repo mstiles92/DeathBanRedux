@@ -23,18 +23,17 @@
 
 package com.mstiles92.plugins.deathbanredux.config
 
-import com.mstiles92.plugins.deathbanredux.DeathBanRedux
 import com.mstiles92.plugins.deathbanredux.data.DeathClass
+import org.bukkit.plugin.java.JavaPlugin
 import java.util.ArrayList
 import java.util.HashMap
 
-public object Config {
+public class Config() {
     private val settings = HashMap<String, Any>()
     private val deathClasses = ArrayList<DeathClass>()
 
-    fun load(plugin: DeathBanRedux) {
+    fun load(plugin: JavaPlugin) {
         val config = plugin.getConfig()
-
         settings["enabled"] = config.getBoolean("Enabled", true)
         settings["banTime"] = config.getString("Ban-Time", "12h")
         settings["deathMessage"] = config.getString("Death-Message", "You have died! You are now banned for %bantimeleft%.")
@@ -49,7 +48,7 @@ public object Config {
             deathClasses.add(DeathClass(it, section.getString("${it}.Ban-Time"), section.getString("${it}.Death-Message"))) }
     }
 
-    fun save(plugin: DeathBanRedux) {
+    fun save(plugin: JavaPlugin) {
         val config = plugin.getConfig()
         settings.forEach { it -> config.set(it.getKey(), it.getValue()) }
         plugin.saveConfig()

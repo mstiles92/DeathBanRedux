@@ -23,16 +23,18 @@
 
 package com.mstiles92.plugins.deathbanredux.util
 
+import com.mstiles92.plugins.deathbanredux.DeathBanRedux
 import com.mstiles92.plugins.deathbanredux.data.PlayerData
-import com.mstiles92.plugins.deathbanredux.data.PlayerDataStore
 import com.mstiles92.plugins.stileslib.calendar.CalendarUtils
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
 
 fun Player.getData() : PlayerData {
-    return PlayerDataStore[this]
+    val plugin = Bukkit.getPluginManager().getPlugin("DeathBanRedux") as DeathBanRedux
+    return plugin.playerDataStore[this]
 }
 
 fun String.replaceMessageVariables(data: PlayerData) : String {

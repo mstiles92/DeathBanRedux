@@ -23,8 +23,7 @@
 
 package com.mstiles92.plugins.deathbanredux.commands
 
-import com.mstiles92.plugins.deathbanredux.config.Config
-import com.mstiles92.plugins.deathbanredux.data.PlayerDataStore
+import com.mstiles92.plugins.deathbanredux.DeathBanRedux
 import com.mstiles92.plugins.deathbanredux.util.getData
 import com.mstiles92.plugins.deathbanredux.util.replaceMessageVariables
 import com.mstiles92.plugins.stileslib.calendar.CalendarUtils
@@ -34,7 +33,7 @@ import com.mstiles92.plugins.stileslib.commands.annotations.Command
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 
-public class DeathbanCommandHandler : CommandHandler {
+public class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
 
     private val tag = "${ChatColor.BLUE}[DeathBanRedux]${ChatColor.RESET}"
     private val errorTag = "${ChatColor.BLUE}[DeathBanRedux]${ChatColor.RED}"
@@ -58,7 +57,7 @@ public class DeathbanCommandHandler : CommandHandler {
 
     Command(name = "deathban.enable", aliases = arrayOf("db.enable", "hdb.enable"), permission = "deathban.enable")
     fun handleEnable(args: Arguments) {
-        Config.setEnabled(true)
+        plugin.config.setEnabled(true)
         args.getSender().sendMessage("${tag} Enabled!")
 
         for (player in Bukkit.getOnlinePlayers()) {
@@ -70,7 +69,7 @@ public class DeathbanCommandHandler : CommandHandler {
 
     Command(name = "deathban.disable", aliases = arrayOf("db.disable", "hdb.disable"), permission = "deathban.enable")
     fun handleDisable(args: Arguments) {
-        Config.setEnabled(false)
+        plugin.config.setEnabled(false)
         args.getSender().sendMessage("${tag} Disabled!")
     }
 
@@ -83,8 +82,8 @@ public class DeathbanCommandHandler : CommandHandler {
 
         val playerName = args.getArgs()[0]
         val player = Bukkit.getPlayer(playerName)
-        val playerData = PlayerDataStore[playerName]
-        val banTime = if (args.getArgs().size() > 1) args.getArgs()[1] else Config.getBanTime()
+        val playerData = plugin.playerDataStore[playerName]
+        val banTime = if (args.getArgs().size() > 1) args.getArgs()[1] else plugin.config.getBanTime()
 
         if (playerData == null) {
             //TODO: lookup player UUID and store ban instead of failing
@@ -112,7 +111,7 @@ public class DeathbanCommandHandler : CommandHandler {
         }
 
         val playerName = args.getArgs()[0]
-        val playerData = PlayerDataStore[playerName]
+        val playerData = plugin.playerDataStore[playerName]
 
         if (playerData == null || !playerData.isCurrentlyBanned()) {
             args.getSender().sendMessage("${errorTag} ${playerName} is not currently banned.")
@@ -130,7 +129,7 @@ public class DeathbanCommandHandler : CommandHandler {
         }
 
         val playerName = args.getArgs()[0]
-        val playerData = PlayerDataStore[playerName]
+        val playerData = plugin.playerDataStore[playerName]
 
         if (playerData == null || !playerData.isCurrentlyBanned()) {
             args.getSender().sendMessage("${tag} ${playerName} is not currently banned.")

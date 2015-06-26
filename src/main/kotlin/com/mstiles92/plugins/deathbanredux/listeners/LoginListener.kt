@@ -23,16 +23,20 @@
 
 package com.mstiles92.plugins.deathbanredux.listeners
 
-import com.mstiles92.plugins.deathbanredux.data.PlayerDataStore
+import com.mstiles92.plugins.deathbanredux.DeathBanRedux
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerLoginEvent
 
-public class LoginListener : Listener {
+public class LoginListener(val plugin: DeathBanRedux) : Listener {
+
+    fun register() {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin)
+    }
 
     EventHandler fun onPlayerLogin(event: PlayerLoginEvent) {
         val player = event.getPlayer()
-        val data = PlayerDataStore[player]
+        val data = plugin.playerDataStore[player]
 
         if (data.isCurrentlyBanned()) {
             event.disallow(PlayerLoginEvent.Result.KICK_BANNED, "You are banned!")
