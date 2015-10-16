@@ -31,11 +31,12 @@ import org.bukkit.event.player.PlayerLoginEvent
 public class LoginListener(val plugin: DeathBanRedux) : Listener {
 
     fun register() {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin)
+        plugin.server.pluginManager.registerEvents(this, plugin)
     }
 
-    EventHandler fun onPlayerLogin(event: PlayerLoginEvent) {
-        val player = event.getPlayer()
+    @EventHandler
+    fun onPlayerLogin(event: PlayerLoginEvent) {
+        val player = event.player
         val data = plugin.playerDataStore[player]
 
         if (data.isCurrentlyBanned()) {

@@ -29,8 +29,8 @@ import org.bukkit.permissions.PermissionDefault
 data class DeathClass(val name: String, val banTime: String, val deathMessage: String) {
 
     fun getPermission() : Permission {
-        val permission = Permission("deathban.class.${name}")
-        permission.setDefault(PermissionDefault.FALSE)
+        val permission = Permission("deathban.class.$name")
+        permission.default = PermissionDefault.FALSE
         return permission
     }
 }

@@ -35,25 +35,26 @@ import java.util.HashMap
 import java.util.UUID
 
 public class PlayerDataStore() {
-    private var instances = HashMap<String, PlayerData>();
+    private var instances = HashMap<String, PlayerData>()
 
-    fun get(player: Player) : PlayerData {
-        if (instances.containsKey(player.getUniqueId().toString())) {
-            val data = instances[player.getUniqueId().toString()]
-            data.lastSeenName = player.getName()
+    operator fun get(player: Player) : PlayerData {
+        var data = instances[player.uniqueId.toString()]
+
+        if (data != null) {
+            data.lastSeenName = player.name
             return data
         } else {
-            val data = PlayerData(player.getName())
-            instances.put(player.getUniqueId().toString(), data)
+            data = PlayerData(player.name)
+            instances.put(player.uniqueId.toString(), data)
             return data
         }
     }
 
-    fun get(uuid: UUID) : PlayerData? {
+    operator fun get(uuid: UUID) : PlayerData? {
         return instances[uuid.toString()]
     }
 
-    fun get(username: String) : PlayerData? {
+    operator fun get(username: String) : PlayerData? {
         return instances.values().firstOrNull { it -> it.lastSeenName.equals(username, ignoreCase = true) }
     }
 
@@ -72,6 +73,6 @@ public class PlayerDataStore() {
         val jsonString = IOUtils.toString(reader)
         reader.close()
 
-        instances = gson.fromJson(jsonString, object : TypeToken<HashMap<String, PlayerData>>(){}.getType()) ?: instances
+        instances = gson.fromJson(jsonString, object : TypeToken<HashMap<String, PlayerData>>(){}.type) ?: instances
     }
 }

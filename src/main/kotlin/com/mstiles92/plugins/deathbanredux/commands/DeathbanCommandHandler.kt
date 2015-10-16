@@ -38,27 +38,27 @@ public class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler 
     private val tag = "${ChatColor.BLUE}[DeathBanRedux]${ChatColor.RESET}"
     private val errorTag = "${ChatColor.BLUE}[DeathBanRedux]${ChatColor.RED}"
 
-    Command(name = "deathban", aliases = arrayOf("db", "hdb"), permission = "deathban.display")
+    @Command(name = "deathban", aliases = arrayOf("db", "hdb"), permission = "deathban.display")
     fun handleDefault(args: Arguments) {
-        args.getSender().sendMessage("${ChatColor.GREEN}====[DeathBanRedux Help]====")
-        args.getSender().sendMessage("${ChatColor.GREEN}<x> ${ChatColor.GREEN}specifies a required parameter, while ${ChatColor.GREEN}[x] ${ChatColor.GREEN}is an optional parameter.")
-        args.getSender().sendMessage("${ChatColor.GREEN}hdb${ChatColor.GREEN} or ${ChatColor.GREEN}db ${ChatColor.GREEN}may be used in place of ${ChatColor.GREEN}deathban${ChatColor.GREEN} in the commands below.")
-        args.getSender().sendMessage("${ChatColor.GREEN}/deathban enable ${ChatColor.GREEN}Enable the plugin server-wide.")
-        args.getSender().sendMessage("${ChatColor.GREEN}/deathban disable ${ChatColor.GREEN}Disable the plugin server-wide.")
-        args.getSender().sendMessage("${ChatColor.GREEN}/deathban ban <player> [time] ${ChatColor.GREEN}Manually ban a player. Uses default time value if none specified.")
-        args.getSender().sendMessage("${ChatColor.GREEN}/deathban unban <player> ${ChatColor.GREEN}Manually unban a banned player.")
-        args.getSender().sendMessage("${ChatColor.GREEN}/deathban status <player> ${ChatColor.GREEN}Check the ban status of a player.")
-        args.getSender().sendMessage("${ChatColor.GREEN}/credits [player] ${ChatColor.GREEN}Check your own or another player's revival credits.")
-        args.getSender().sendMessage("${ChatColor.GREEN}/credits send <player> <amount> ${ChatColor.GREEN}Send some of your own revival credits to another player.")
-        args.getSender().sendMessage("${ChatColor.GREEN}/credits give <player> <amount> ${ChatColor.GREEN}Give a player a certain amount of revival credits.")
-        args.getSender().sendMessage("${ChatColor.GREEN}/credits take <player> <amount> ${ChatColor.GREEN}Take a certain amount of credits from another player.")
+        args.sender.sendMessage("${ChatColor.GREEN}====[DeathBanRedux Help]====")
+        args.sender.sendMessage("${ChatColor.GREEN}<x> ${ChatColor.GREEN}specifies a required parameter, while ${ChatColor.GREEN}[x] ${ChatColor.GREEN}is an optional parameter.")
+        args.sender.sendMessage("${ChatColor.GREEN}hdb${ChatColor.GREEN} or ${ChatColor.GREEN}db ${ChatColor.GREEN}may be used in place of ${ChatColor.GREEN}deathban${ChatColor.GREEN} in the commands below.")
+        args.sender.sendMessage("${ChatColor.GREEN}/deathban enable ${ChatColor.GREEN}Enable the plugin server-wide.")
+        args.sender.sendMessage("${ChatColor.GREEN}/deathban disable ${ChatColor.GREEN}Disable the plugin server-wide.")
+        args.sender.sendMessage("${ChatColor.GREEN}/deathban ban <player> [time] ${ChatColor.GREEN}Manually ban a player. Uses default time value if none specified.")
+        args.sender.sendMessage("${ChatColor.GREEN}/deathban unban <player> ${ChatColor.GREEN}Manually unban a banned player.")
+        args.sender.sendMessage("${ChatColor.GREEN}/deathban status <player> ${ChatColor.GREEN}Check the ban status of a player.")
+        args.sender.sendMessage("${ChatColor.GREEN}/credits [player] ${ChatColor.GREEN}Check your own or another player's revival credits.")
+        args.sender.sendMessage("${ChatColor.GREEN}/credits send <player> <amount> ${ChatColor.GREEN}Send some of your own revival credits to another player.")
+        args.sender.sendMessage("${ChatColor.GREEN}/credits give <player> <amount> ${ChatColor.GREEN}Give a player a certain amount of revival credits.")
+        args.sender.sendMessage("${ChatColor.GREEN}/credits take <player> <amount> ${ChatColor.GREEN}Take a certain amount of credits from another player.")
 
     }
 
-    Command(name = "deathban.enable", aliases = arrayOf("db.enable", "hdb.enable"), permission = "deathban.enable")
+    @Command(name = "deathban.enable", aliases = arrayOf("db.enable", "hdb.enable"), permission = "deathban.enable")
     fun handleEnable(args: Arguments) {
         plugin.config.setEnabled(true)
-        args.getSender().sendMessage("${tag} Enabled!")
+        args.sender.sendMessage("$tag Enabled!")
 
         for (player in Bukkit.getOnlinePlayers()) {
             if (player.getData().isCurrentlyBanned()) {
@@ -67,74 +67,74 @@ public class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler 
         }
     }
 
-    Command(name = "deathban.disable", aliases = arrayOf("db.disable", "hdb.disable"), permission = "deathban.enable")
+    @Command(name = "deathban.disable", aliases = arrayOf("db.disable", "hdb.disable"), permission = "deathban.enable")
     fun handleDisable(args: Arguments) {
         plugin.config.setEnabled(false)
-        args.getSender().sendMessage("${tag} Disabled!")
+        args.sender.sendMessage("$tag Disabled!")
     }
 
-    Command(name = "deathban.ban", aliases = arrayOf("db.ban", "hdb.ban"), permission = "deathban.ban")
+    @Command(name = "deathban.ban", aliases = arrayOf("db.ban", "hdb.ban"), permission = "deathban.ban")
     fun handleBan(args: Arguments) {
-        if (args.getArgs().size() < 1) {
-            args.getSender().sendMessage("${errorTag} You must specify a player!")
+        if (args.args.size() < 1) {
+            args.sender.sendMessage("$errorTag You must specify a player!")
             return
         }
 
-        val playerName = args.getArgs()[0]
+        val playerName = args.args[0]
         val player = Bukkit.getPlayer(playerName)
         val playerData = plugin.playerDataStore[playerName]
-        val banTime = if (args.getArgs().size() > 1) args.getArgs()[1] else plugin.config.getBanTime()
+        val banTime = if (args.args.size() > 1) args.args[1] else plugin.config.getBanTime()
 
         if (playerData == null) {
             //TODO: lookup player UUID and store ban instead of failing
-            args.getSender().sendMessage("${errorTag} PlayerData not found for ${playerName}!")
+            args.sender.sendMessage("$errorTag PlayerData not found for $playerName!")
         } else if (player != null && player.hasPermission("deathban.ban.exempt")) {
-            args.getSender().sendMessage("${errorTag} This player can not be banned!")
+            args.sender.sendMessage("$errorTag This player can not be banned!")
         } else {
             val banCalendar = CalendarUtils.parseTimeDifference(banTime)
 
             if (banCalendar == null) {
-                args.getSender().sendMessage("${errorTag} Invalid ban time entered!")
+                args.sender.sendMessage("$errorTag Invalid ban time entered!")
             } else {
-                playerData.banTime = banCalendar.getTimeInMillis()
-                args.getSender().sendMessage("${tag} ${playerName} has been banned for ${banTime}.")
+                playerData.banTime = banCalendar.timeInMillis
+                args.sender.sendMessage("$tag $playerName has been banned for $banTime.")
                 //TODO: kick player if online
             }
         }
     }
 
-    Command(name = "deathban.unban", aliases = arrayOf("db.unban", "hdb.unban"), permission = "deathban.unban")
+    @Command(name = "deathban.unban", aliases = arrayOf("db.unban", "hdb.unban"), permission = "deathban.unban")
     fun handleUnban(args: Arguments) {
-        if (args.getArgs().size() < 1) {
-            args.getSender().sendMessage("${errorTag} You must specify a player.")
+        if (args.args.size() < 1) {
+            args.sender.sendMessage("$errorTag You must specify a player.")
             return
         }
 
-        val playerName = args.getArgs()[0]
+        val playerName = args.args[0]
         val playerData = plugin.playerDataStore[playerName]
 
         if (playerData == null || !playerData.isCurrentlyBanned()) {
-            args.getSender().sendMessage("${errorTag} ${playerName} is not currently banned.")
+            args.sender.sendMessage("$errorTag $playerName is not currently banned.")
         } else {
             playerData.resetBanTime()
-            args.getSender().sendMessage("${tag} ${playerData.lastSeenName} has been unbanned.")
+            args.sender.sendMessage("$tag ${playerData.lastSeenName} has been unbanned.")
         }
     }
 
-    Command(name = "deathban.status", aliases = arrayOf("db.status", "hdb.status"), permission = "deathban.status")
+    @Command(name = "deathban.status", aliases = arrayOf("db.status", "hdb.status"), permission = "deathban.status")
     fun handleStatus(args: Arguments) {
-        if (args.getArgs().size() < 1) {
-            args.getSender().sendMessage("${errorTag} You must specify a player!")
+        if (args.args.size() < 1) {
+            args.sender.sendMessage("$errorTag You must specify a player!")
             return
         }
 
-        val playerName = args.getArgs()[0]
+        val playerName = args.args[0]
         val playerData = plugin.playerDataStore[playerName]
 
         if (playerData == null || !playerData.isCurrentlyBanned()) {
-            args.getSender().sendMessage("${tag} ${playerName} is not currently banned.")
+            args.sender.sendMessage("$tag $playerName is not currently banned.")
         } else {
-            args.getSender().sendMessage("${tag} %player% is banned until %unbantime% %unbandate%".replaceMessageVariables(playerData))
+            args.sender.sendMessage("$tag %player% is banned until %unbantime% %unbandate%".replaceMessageVariables(playerData))
         }
     }
 }

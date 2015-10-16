@@ -33,7 +33,7 @@ public class Config() {
     private val deathClasses = ArrayList<DeathClass>()
 
     fun load(plugin: JavaPlugin) {
-        val config = plugin.getConfig()
+        val config = plugin.config
         settings["enabled"] = config.getBoolean("Enabled", true)
         settings["banTime"] = config.getString("Ban-Time", "12h")
         settings["deathMessage"] = config.getString("Death-Message", "You have died! You are now banned for %bantimeleft%.")
@@ -45,11 +45,11 @@ public class Config() {
 
         val section = config.getConfigurationSection("Death-Classes")
         section?.getKeys(false)?.forEach { it ->
-            deathClasses.add(DeathClass(it, section.getString("${it}.Ban-Time"), section.getString("${it}.Death-Message"))) }
+            deathClasses.add(DeathClass(it, section.getString("$it.Ban-Time"), section.getString("$it.Death-Message"))) }
     }
 
     fun save(plugin: JavaPlugin) {
-        val config = plugin.getConfig()
+        val config = plugin.config
         settings.forEach { it -> config.set(it.getKey(), it.getValue()) }
         plugin.saveConfig()
     }

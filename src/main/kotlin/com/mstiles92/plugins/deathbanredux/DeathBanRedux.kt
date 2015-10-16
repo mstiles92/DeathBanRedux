@@ -46,14 +46,14 @@ class DeathBanRedux() : JavaPlugin() {
         config.load(this)
 
         try {
-            val jsonFile = File(getDataFolder(), "data.json")
+            val jsonFile = File(dataFolder, "data.json")
 
             if (!jsonFile.createNewFile()) {
                 // Do not load from file if it was just created, as it will be empty.
                 playerDataStore.load(jsonFile)
             }
         } catch (e: IOException) {
-            getLogger().warning("${ChatColor.RED}Error loading JSON data file!")
+            logger.warning("${ChatColor.RED}Error loading JSON data file!")
         }
 
         commandRegistry.registerCommands(DeathbanCommandHandler(this))
@@ -64,7 +64,7 @@ class DeathBanRedux() : JavaPlugin() {
             val metrics = Metrics(this)
             metrics.start()
         } catch (e: IOException) {
-            getLogger().warning("${ChatColor.RED}Error starting metrics!")
+            logger.warning("${ChatColor.RED}Error starting metrics!")
         }
     }
 
@@ -72,11 +72,11 @@ class DeathBanRedux() : JavaPlugin() {
         config.save(this)
 
         try {
-            val jsonFile = File(getDataFolder(), "data.json")
+            val jsonFile = File(dataFolder, "data.json")
 
             playerDataStore.save(jsonFile)
         } catch (e: IOException) {
-            getLogger().warning("${ChatColor.RED}Error saving JSON data file!")
+            logger.warning("${ChatColor.RED}Error saving JSON data file!")
         }
     }
 

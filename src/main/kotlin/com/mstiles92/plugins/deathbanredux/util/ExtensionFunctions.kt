@@ -46,12 +46,12 @@ fun String.replaceMessageVariables(data: PlayerData) : String {
 
     var message = this.replace("%player%".toRegex(), data.lastSeenName)
 
-    message = message.replace("%currenttime%".toRegex(), timeFormat.format(now.getTime()))
-    message = message.replace("%currentdate%".toRegex(), dateFormat.format(now.getTime()))
+    message = message.replace("%currenttime%".toRegex(), timeFormat.format(now.time))
+    message = message.replace("%currentdate%".toRegex(), dateFormat.format(now.time))
 
     if (data.isCurrentlyBanned()) {
-        message = message.replace("%unbantime%".toRegex(), timeFormat.format(unbanTime.getTime()))
-        message = message.replace("%unbandate%".toRegex(), dateFormat.format(unbanTime.getTime()))
+        message = message.replace("%unbantime%".toRegex(), timeFormat.format(unbanTime.time))
+        message = message.replace("%unbandate%".toRegex(), dateFormat.format(unbanTime.time))
         message = message.replace("%bantimeleft%".toRegex(), CalendarUtils.buildTimeDifference(now, unbanTime))
     }
 

@@ -29,7 +29,7 @@ data class PlayerData(var lastSeenName: String, var revivalCredits: Int = 0, var
 
     fun getUnbanCalendar() : Calendar {
         val calendar = Calendar.getInstance()
-        calendar.setTimeInMillis(banTime)
+        calendar.timeInMillis = banTime
         return calendar
     }
 
