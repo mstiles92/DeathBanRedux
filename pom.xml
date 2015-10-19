@@ -107,7 +107,7 @@
             <url>http://repo.mcstats.org/content/repositories/public</url>
         </repository>
         <repository>
-            <id>mstiles92-repo</id>
+            <id>mstiles92-snapshots</id>
             <url>https://mstiles92.com/nexus/content/repositories/snapshots</url>
         </repository>
     </repositories>
