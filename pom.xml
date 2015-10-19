@@ -100,15 +100,15 @@
     <repositories>
         <repository>
             <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
         </repository>
         <repository>
             <id>mcstats-repo</id>
-            <url>http://repo.mcstats.org/content/repositories/public/</url>
+            <url>http://repo.mcstats.org/content/repositories/public</url>
         </repository>
         <repository>
             <id>mstiles92-repo</id>
-            <url>https://mstiles92.com/artifactory/mstiles92-plugins</url>
+            <url>https://mstiles92.com/nexus/content/repositories/snapshots</url>
         </repository>
     </repositories>
 
