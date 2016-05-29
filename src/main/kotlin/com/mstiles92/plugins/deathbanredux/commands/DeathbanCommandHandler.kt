@@ -33,7 +33,7 @@ import com.mstiles92.plugins.stileslib.commands.annotations.Command
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 
-public class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
+class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
 
     private val tag = "${ChatColor.BLUE}[DeathBanRedux]${ChatColor.RESET}"
     private val errorTag = "${ChatColor.BLUE}[DeathBanRedux]${ChatColor.RED}"
@@ -75,7 +75,7 @@ public class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler 
 
     @Command(name = "deathban.ban", aliases = arrayOf("db.ban", "hdb.ban"), permission = "deathban.ban")
     fun handleBan(args: Arguments) {
-        if (args.args.size() < 1) {
+        if (args.args.size < 1) {
             args.sender.sendMessage("$errorTag You must specify a player!")
             return
         }
@@ -83,7 +83,7 @@ public class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler 
         val playerName = args.args[0]
         val player = Bukkit.getPlayer(playerName)
         val playerData = plugin.playerDataStore[playerName]
-        val banTime = if (args.args.size() > 1) args.args[1] else plugin.config.getBanTime()
+        val banTime = if (args.args.size > 1) args.args[1] else plugin.config.getBanTime()
 
         if (playerData == null) {
             //TODO: lookup player UUID and store ban instead of failing
@@ -105,7 +105,7 @@ public class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler 
 
     @Command(name = "deathban.unban", aliases = arrayOf("db.unban", "hdb.unban"), permission = "deathban.unban")
     fun handleUnban(args: Arguments) {
-        if (args.args.size() < 1) {
+        if (args.args.size < 1) {
             args.sender.sendMessage("$errorTag You must specify a player.")
             return
         }
@@ -123,7 +123,7 @@ public class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler 
 
     @Command(name = "deathban.status", aliases = arrayOf("db.status", "hdb.status"), permission = "deathban.status")
     fun handleStatus(args: Arguments) {
-        if (args.args.size() < 1) {
+        if (args.args.size < 1) {
             args.sender.sendMessage("$errorTag You must specify a player!")
             return
         }

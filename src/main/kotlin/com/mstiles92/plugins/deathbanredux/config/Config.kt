@@ -28,7 +28,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.util.ArrayList
 import java.util.HashMap
 
-public class Config() {
+class Config() {
     private val settings = HashMap<String, Any>()
     private val deathClasses = ArrayList<DeathClass>()
 
@@ -50,7 +50,7 @@ public class Config() {
 
     fun save(plugin: JavaPlugin) {
         val config = plugin.config
-        settings.forEach { it -> config.set(it.getKey(), it.getValue()) }
+        settings.forEach { it -> config.set(it.key, it.value) }
         plugin.saveConfig()
     }
 

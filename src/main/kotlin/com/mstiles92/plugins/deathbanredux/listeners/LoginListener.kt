@@ -28,7 +28,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerLoginEvent
 
-public class LoginListener(val plugin: DeathBanRedux) : Listener {
+class LoginListener(val plugin: DeathBanRedux) : Listener {
 
     fun register() {
         plugin.server.pluginManager.registerEvents(this, plugin)

@@ -34,7 +34,7 @@ import java.io.FileWriter
 import java.util.HashMap
 import java.util.UUID
 
-public class PlayerDataStore() {
+class PlayerDataStore() {
     private var instances = HashMap<String, PlayerData>()
 
     operator fun get(player: Player) : PlayerData {
@@ -55,7 +55,7 @@ public class PlayerDataStore() {
     }
 
     operator fun get(username: String) : PlayerData? {
-        return instances.values().firstOrNull { it -> it.lastSeenName.equals(username, ignoreCase = true) }
+        return instances.values.firstOrNull { it -> it.lastSeenName.equals(username, ignoreCase = true) }
     }
 
     fun save(file: File, pretty: Boolean = true) {
