@@ -24,8 +24,10 @@
 package com.mstiles92.plugins.deathbanredux.commands
 
 import com.mstiles92.plugins.deathbanredux.DeathBanRedux
+import com.mstiles92.plugins.deathbanredux.util.errorTag
 import com.mstiles92.plugins.deathbanredux.util.getData
 import com.mstiles92.plugins.deathbanredux.util.replaceMessageVariables
+import com.mstiles92.plugins.deathbanredux.util.tag
 import com.mstiles92.plugins.stileslib.calendar.CalendarUtils
 import com.mstiles92.plugins.stileslib.commands.Arguments
 import com.mstiles92.plugins.stileslib.commands.CommandHandler
@@ -34,9 +36,6 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 
 class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
-
-    private val tag = "${ChatColor.BLUE}[DeathBanRedux]${ChatColor.RESET}"
-    private val errorTag = "${ChatColor.BLUE}[DeathBanRedux]${ChatColor.RED}"
 
     @Command(name = "deathban", aliases = arrayOf("db", "hdb"), permission = "deathban.display")
     fun handleDefault(args: Arguments) {

@@ -23,6 +23,7 @@
 
 package com.mstiles92.plugins.deathbanredux
 
+import com.mstiles92.plugins.deathbanredux.commands.CreditsCommandHandler
 import com.mstiles92.plugins.deathbanredux.commands.DeathbanCommandHandler
 import com.mstiles92.plugins.deathbanredux.config.Config
 import com.mstiles92.plugins.deathbanredux.data.PlayerDataStore
@@ -57,6 +58,7 @@ class DeathBanRedux() : JavaPlugin() {
         }
 
         commandRegistry.registerCommands(DeathbanCommandHandler(this))
+        commandRegistry.registerCommands(CreditsCommandHandler(this))
 
         LoginListener(this).register()
 
