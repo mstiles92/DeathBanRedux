@@ -60,7 +60,7 @@ class DeathBanRedux() : JavaPlugin() {
         commandRegistry.registerCommands(DeathbanCommandHandler(this))
         commandRegistry.registerCommands(CreditsCommandHandler(this))
 
-        LoginListener(this).register()
+        server.pluginManager.registerEvents(LoginListener, this)
 
         try {
             val metrics = Metrics(this)

@@ -23,18 +23,13 @@
 
 package com.mstiles92.plugins.deathbanredux.listeners
 
-import com.mstiles92.plugins.deathbanredux.DeathBanRedux
 import com.mstiles92.plugins.deathbanredux.util.getData
 import com.mstiles92.plugins.deathbanredux.util.replaceMessageVariables
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerLoginEvent
 
-class LoginListener(val plugin: DeathBanRedux) : Listener {
-
-    fun register() {
-        plugin.server.pluginManager.registerEvents(this, plugin)
-    }
+object LoginListener : Listener {
 
     @EventHandler
     fun onPlayerLogin(event: PlayerLoginEvent) {
