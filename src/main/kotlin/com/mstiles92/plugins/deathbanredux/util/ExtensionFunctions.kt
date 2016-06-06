@@ -24,6 +24,7 @@
 package com.mstiles92.plugins.deathbanredux.util
 
 import com.mstiles92.plugins.deathbanredux.DeathBanRedux
+import com.mstiles92.plugins.deathbanredux.data.DeathClass
 import com.mstiles92.plugins.deathbanredux.data.PlayerData
 import com.mstiles92.plugins.stileslib.calendar.CalendarUtils
 import org.bukkit.Bukkit
@@ -37,7 +38,13 @@ fun Player.getData() : PlayerData {
     return plugin.playerDataStore[this]
 }
 
-fun String.replaceMessageVariables(data: PlayerData) : String {
+fun Player.getDeathClass() = DeathClass[this]
+
+fun String.replaceMessageVariables(data: PlayerData?) : String {
+    if (data == null) {
+        return this
+    }
+
     val timeFormat = SimpleDateFormat("hh:mm a z")
     val dateFormat = SimpleDateFormat("MM/dd/yyyy")
 

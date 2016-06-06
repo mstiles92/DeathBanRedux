@@ -24,10 +24,7 @@
 package com.mstiles92.plugins.deathbanredux.commands
 
 import com.mstiles92.plugins.deathbanredux.DeathBanRedux
-import com.mstiles92.plugins.deathbanredux.util.errorTag
-import com.mstiles92.plugins.deathbanredux.util.getData
-import com.mstiles92.plugins.deathbanredux.util.replaceMessageVariables
-import com.mstiles92.plugins.deathbanredux.util.tag
+import com.mstiles92.plugins.deathbanredux.util.*
 import com.mstiles92.plugins.stileslib.calendar.CalendarUtils
 import com.mstiles92.plugins.stileslib.commands.Arguments
 import com.mstiles92.plugins.stileslib.commands.CommandHandler
@@ -59,11 +56,9 @@ class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
         plugin.config.setEnabled(true)
         args.sender.sendMessage("$tag Enabled!")
 
-        for (player in Bukkit.getOnlinePlayers()) {
-            if (player.getData().isCurrentlyBanned()) {
-                //TODO: kick player
-            }
-        }
+        Bukkit.getScheduler().runTaskLater(plugin, {
+            Bukkit.getOnlinePlayers().filter { it -> it.getData().isCurrentlyBanned() }.forEach { it.kickPlayer("$tag Plugin was enabled while you are banned!") }
+        }, plugin.config.getTickDelay().toLong())
     }
 
     @Command(name = "deathban.disable", aliases = arrayOf("db.disable", "hdb.disable"), permission = "deathban.enable")
@@ -97,7 +92,10 @@ class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
             } else {
                 playerData.banTime = banCalendar.timeInMillis
                 args.sender.sendMessage("$tag $playerName has been banned for $banTime.")
-                //TODO: kick player if online
+                Bukkit.getScheduler().runTaskLater(plugin, {
+                    val kickMessage = player?.getDeathClass()?.deathMessage ?: plugin.config.getDeathMessage()
+                    player?.kickPlayer(kickMessage.replaceMessageVariables(playerData))
+                }, plugin.config.getTickDelay().toLong())
             }
         }
     }

@@ -23,10 +23,27 @@
 
 package com.mstiles92.plugins.deathbanredux.data
 
+import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 
 data class DeathClass(val name: String, val banTime: String, val deathMessage: String) {
+
+    companion object {
+        private val classList: MutableList<DeathClass> = arrayListOf()
+
+        operator fun get(name: String) = classList.find { it -> it.name.equals(name) }
+        operator fun get(player: Player) = classList.find { it -> player.hasPermission(it.getPermission()) }
+
+        fun loadFromConfig(section: ConfigurationSection?) {
+            section?.getKeys(false)?.forEach { it -> DeathClass(it, section.getString("$it.Ban-Time"), section.getString("$it.Death-Message")) }
+        }
+    }
+
+    init {
+        classList.add(this)
+    }
 
     fun getPermission() : Permission {
         val permission = Permission("deathban.class.$name")

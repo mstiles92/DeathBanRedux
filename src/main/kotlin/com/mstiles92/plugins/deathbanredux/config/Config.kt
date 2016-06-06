@@ -25,12 +25,10 @@ package com.mstiles92.plugins.deathbanredux.config
 
 import com.mstiles92.plugins.deathbanredux.data.DeathClass
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.ArrayList
 import java.util.HashMap
 
 class Config() {
     private val settings = HashMap<String, Any>()
-    private val deathClasses = ArrayList<DeathClass>()
 
     fun load(plugin: JavaPlugin) {
         val config = plugin.config
@@ -43,9 +41,7 @@ class Config() {
         settings["verboseLogging"] = config.getBoolean("Verbose", false)
         settings["updateChecking"] = config.getBoolean("Check-for-Updates", true)
 
-        val section = config.getConfigurationSection("Death-Classes")
-        section?.getKeys(false)?.forEach { it ->
-            deathClasses.add(DeathClass(it, section.getString("$it.Ban-Time"), section.getString("$it.Death-Message"))) }
+        DeathClass.loadFromConfig(config.getConfigurationSection("Death-Classes"))
     }
 
     fun save(plugin: JavaPlugin) {
