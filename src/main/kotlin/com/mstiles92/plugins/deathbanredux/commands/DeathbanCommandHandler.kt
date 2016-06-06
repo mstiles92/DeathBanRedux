@@ -24,6 +24,7 @@
 package com.mstiles92.plugins.deathbanredux.commands
 
 import com.mstiles92.plugins.deathbanredux.DeathBanRedux
+import com.mstiles92.plugins.deathbanredux.data.PlayerData
 import com.mstiles92.plugins.deathbanredux.util.*
 import com.mstiles92.plugins.stileslib.calendar.CalendarUtils
 import com.mstiles92.plugins.stileslib.commands.Arguments
@@ -76,7 +77,7 @@ class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
 
         val playerName = args.args[0]
         val player = Bukkit.getPlayer(playerName)
-        val playerData = plugin.playerDataStore[playerName]
+        val playerData = PlayerData[playerName]
         val banTime = if (args.args.size > 1) args.args[1] else plugin.config.getBanTime()
 
         if (playerData == null) {
@@ -108,7 +109,7 @@ class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
         }
 
         val playerName = args.args[0]
-        val playerData = plugin.playerDataStore[playerName]
+        val playerData = PlayerData[playerName]
 
         if (playerData == null || !playerData.isCurrentlyBanned()) {
             args.sender.sendMessage("$errorTag $playerName is not currently banned.")
@@ -126,7 +127,7 @@ class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
         }
 
         val playerName = args.args[0]
-        val playerData = plugin.playerDataStore[playerName]
+        val playerData = PlayerData[playerName]
 
         if (playerData == null || !playerData.isCurrentlyBanned()) {
             args.sender.sendMessage("$tag $playerName is not currently banned.")

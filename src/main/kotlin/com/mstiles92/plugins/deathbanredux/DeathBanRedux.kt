@@ -26,7 +26,7 @@ package com.mstiles92.plugins.deathbanredux
 import com.mstiles92.plugins.deathbanredux.commands.CreditsCommandHandler
 import com.mstiles92.plugins.deathbanredux.commands.DeathbanCommandHandler
 import com.mstiles92.plugins.deathbanredux.config.Config
-import com.mstiles92.plugins.deathbanredux.data.PlayerDataStore
+import com.mstiles92.plugins.deathbanredux.data.PlayerData
 import com.mstiles92.plugins.deathbanredux.listeners.LoginListener
 import com.mstiles92.plugins.stileslib.commands.CommandRegistry
 import org.bukkit.ChatColor
@@ -39,7 +39,6 @@ import java.io.IOException
 
 class DeathBanRedux() : JavaPlugin() {
     val config = Config()
-    val playerDataStore = PlayerDataStore()
     private val commandRegistry = CommandRegistry(this)
 
     override fun onEnable() {
@@ -51,14 +50,14 @@ class DeathBanRedux() : JavaPlugin() {
 
             if (!jsonFile.createNewFile()) {
                 // Do not load from file if it was just created, as it will be empty.
-                playerDataStore.load(jsonFile)
+                PlayerData.load(jsonFile)
             }
         } catch (e: IOException) {
             logger.warning("${ChatColor.RED}Error loading JSON data file!")
         }
 
         commandRegistry.registerCommands(DeathbanCommandHandler(this))
-        commandRegistry.registerCommands(CreditsCommandHandler(this))
+        commandRegistry.registerCommands(CreditsCommandHandler())
 
         server.pluginManager.registerEvents(LoginListener, this)
 
@@ -76,7 +75,7 @@ class DeathBanRedux() : JavaPlugin() {
         try {
             val jsonFile = File(dataFolder, "data.json")
 
-            playerDataStore.save(jsonFile)
+            PlayerData.save(jsonFile)
         } catch (e: IOException) {
             logger.warning("${ChatColor.RED}Error saving JSON data file!")
         }

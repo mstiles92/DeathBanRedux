@@ -23,7 +23,7 @@
 
 package com.mstiles92.plugins.deathbanredux.commands
 
-import com.mstiles92.plugins.deathbanredux.DeathBanRedux
+import com.mstiles92.plugins.deathbanredux.data.PlayerData
 import com.mstiles92.plugins.deathbanredux.util.errorTag
 import com.mstiles92.plugins.deathbanredux.util.getData
 import com.mstiles92.plugins.deathbanredux.util.tag
@@ -31,7 +31,7 @@ import com.mstiles92.plugins.stileslib.commands.Arguments
 import com.mstiles92.plugins.stileslib.commands.CommandHandler
 import com.mstiles92.plugins.stileslib.commands.annotations.Command
 
-class CreditsCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
+class CreditsCommandHandler() : CommandHandler {
 
     @Command(name = "credits", aliases = arrayOf("cr"), permission = "deathban.credits.check")
     fun handleDefault(args: Arguments) {
@@ -43,7 +43,7 @@ class CreditsCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
             }
         } else {
             if (args.sender.hasPermission("deathban.credits.check.others")) {
-                val otherPlayerData = plugin.playerDataStore[args.args[0]]
+                val otherPlayerData = PlayerData[args.args[0]]
 
                 if (otherPlayerData == null) {
                     args.sender.sendMessage("$errorTag The specified player could not be found.")
@@ -71,7 +71,7 @@ class CreditsCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
         }
 
         val playerData = args.player.getData()
-        val otherPlayerData = plugin.playerDataStore[args.args[0]]
+        val otherPlayerData = PlayerData[args.args[0]]
 
         if (otherPlayerData == null) {
             args.player.sendMessage("$errorTag The specified player could not be found.")
@@ -100,7 +100,7 @@ class CreditsCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
             return
         }
 
-        val otherPlayerData = plugin.playerDataStore[args.args[0]]
+        val otherPlayerData = PlayerData[args.args[0]]
 
         if (otherPlayerData == null) {
             args.sender.sendMessage("$errorTag The specified player could not be found.")
@@ -124,7 +124,7 @@ class CreditsCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
             return
         }
 
-        val otherPlayerData = plugin.playerDataStore[args.args[0]]
+        val otherPlayerData = PlayerData[args.args[0]]
 
         if (otherPlayerData == null) {
             args.sender.sendMessage("$errorTag The specified player could not be found.")
