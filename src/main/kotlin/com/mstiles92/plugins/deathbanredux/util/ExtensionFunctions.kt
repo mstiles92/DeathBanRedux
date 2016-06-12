@@ -26,6 +26,7 @@ package com.mstiles92.plugins.deathbanredux.util
 import com.mstiles92.plugins.deathbanredux.data.DeathClass
 import com.mstiles92.plugins.deathbanredux.data.PlayerData
 import com.mstiles92.plugins.stileslib.calendar.CalendarUtils
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -33,6 +34,12 @@ import java.util.Calendar
 fun Player.getData() : PlayerData = PlayerData[this]
 
 fun Player.getDeathClass() : DeathClass? = DeathClass[this]
+
+fun Player.sendMessageLater(message: String) {
+    Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("DeathBanRedux"), {
+        this.sendMessage(message)
+    }, 20L)
+}
 
 fun String.replaceMessageVariables(data: PlayerData?) : String {
     if (data == null) {
