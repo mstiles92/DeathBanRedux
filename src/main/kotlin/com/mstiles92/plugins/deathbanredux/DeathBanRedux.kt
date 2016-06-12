@@ -25,7 +25,7 @@ package com.mstiles92.plugins.deathbanredux
 
 import com.mstiles92.plugins.deathbanredux.commands.CreditsCommandHandler
 import com.mstiles92.plugins.deathbanredux.commands.DeathbanCommandHandler
-import com.mstiles92.plugins.deathbanredux.config.Config
+import com.mstiles92.plugins.deathbanredux.config.DeathBanConfig
 import com.mstiles92.plugins.deathbanredux.data.PlayerData
 import com.mstiles92.plugins.deathbanredux.listeners.LoginListener
 import com.mstiles92.plugins.stileslib.commands.CommandRegistry
@@ -38,12 +38,11 @@ import java.io.File
 import java.io.IOException
 
 class DeathBanRedux() : JavaPlugin() {
-    val config = Config()
     private val commandRegistry = CommandRegistry(this)
 
     override fun onEnable() {
         saveDefaultConfig()
-        config.load(this)
+        DeathBanConfig.load(this)
 
         try {
             val jsonFile = File(dataFolder, "data.json")
@@ -70,7 +69,7 @@ class DeathBanRedux() : JavaPlugin() {
     }
 
     override fun onDisable() {
-        config.save(this)
+        DeathBanConfig.save(this)
 
         try {
             val jsonFile = File(dataFolder, "data.json")

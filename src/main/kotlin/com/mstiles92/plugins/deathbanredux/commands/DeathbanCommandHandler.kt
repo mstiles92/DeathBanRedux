@@ -24,6 +24,7 @@
 package com.mstiles92.plugins.deathbanredux.commands
 
 import com.mstiles92.plugins.deathbanredux.DeathBanRedux
+import com.mstiles92.plugins.deathbanredux.config.DeathBanConfig
 import com.mstiles92.plugins.deathbanredux.data.PlayerData
 import com.mstiles92.plugins.deathbanredux.util.*
 import com.mstiles92.plugins.stileslib.calendar.CalendarUtils
@@ -54,17 +55,17 @@ class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
 
     @Command(name = "deathban.enable", aliases = arrayOf("db.enable", "hdb.enable"), permission = "deathban.enable")
     fun handleEnable(args: Arguments) {
-        plugin.config.setEnabled(true)
+        DeathBanConfig.setEnabled(true)
         args.sender.sendMessage("$tag Enabled!")
 
         Bukkit.getScheduler().runTaskLater(plugin, {
             Bukkit.getOnlinePlayers().filter { it -> it.getData().isCurrentlyBanned() }.forEach { it.kickPlayer("$tag Plugin was enabled while you are banned!") }
-        }, plugin.config.getTickDelay().toLong())
+        }, DeathBanConfig.getTickDelay().toLong())
     }
 
     @Command(name = "deathban.disable", aliases = arrayOf("db.disable", "hdb.disable"), permission = "deathban.enable")
     fun handleDisable(args: Arguments) {
-        plugin.config.setEnabled(false)
+        DeathBanConfig.setEnabled(false)
         args.sender.sendMessage("$tag Disabled!")
     }
 
@@ -78,7 +79,7 @@ class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
         val playerName = args.args[0]
         val player = Bukkit.getPlayer(playerName)
         val playerData = PlayerData[playerName]
-        val banTime = if (args.args.size > 1) args.args[1] else plugin.config.getBanTime()
+        val banTime = if (args.args.size > 1) args.args[1] else DeathBanConfig.getBanTime()
 
         if (playerData == null) {
             //TODO: lookup player UUID and store ban instead of failing
@@ -94,9 +95,9 @@ class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
                 playerData.banTime = banCalendar.timeInMillis
                 args.sender.sendMessage("$tag $playerName has been banned for $banTime.")
                 Bukkit.getScheduler().runTaskLater(plugin, {
-                    val kickMessage = player?.getDeathClass()?.deathMessage ?: plugin.config.getDeathMessage()
+                    val kickMessage = player?.getDeathClass()?.deathMessage ?: DeathBanConfig.getDeathMessage()
                     player?.kickPlayer(kickMessage.replaceMessageVariables(playerData))
-                }, plugin.config.getTickDelay().toLong())
+                }, DeathBanConfig.getTickDelay().toLong())
             }
         }
     }

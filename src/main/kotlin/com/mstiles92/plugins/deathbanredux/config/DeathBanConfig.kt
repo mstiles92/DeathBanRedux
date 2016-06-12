@@ -25,10 +25,9 @@ package com.mstiles92.plugins.deathbanredux.config
 
 import com.mstiles92.plugins.deathbanredux.data.DeathClass
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.HashMap
 
-class Config() {
-    private val settings = HashMap<String, Any>()
+object DeathBanConfig {
+    private val settings: MutableMap<String, Any> = mutableMapOf()
 
     fun load(plugin: JavaPlugin) {
         val config = plugin.config
