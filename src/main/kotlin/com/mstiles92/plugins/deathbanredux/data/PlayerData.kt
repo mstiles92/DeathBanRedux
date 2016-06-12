@@ -55,7 +55,7 @@ data class PlayerData(val uuid: String, var lastSeenName: String, var revivalCre
         fun load(file: File) {
             val gson = Gson()
 
-            file.reader().use { instances = gson.fromJson(IOUtils.toString(it), object: TypeToken<HashMap<String, PlayerData>>(){}.type) ?: instances }
+            file.reader().use { instances = gson.fromJson(IOUtils.toString(it), object: TypeToken<MutableMap<String, PlayerData>>(){}.type) ?: instances }
         }
     }
 
