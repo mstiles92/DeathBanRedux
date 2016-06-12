@@ -39,7 +39,7 @@ fun String.replaceMessageVariables(data: PlayerData?) : String {
         return this
     }
 
-    val timeFormat = SimpleDateFormat("hh:mm a z")
+    val timeFormat = SimpleDateFormat("hh:mm:ss a z")
     val dateFormat = SimpleDateFormat("MM/dd/yyyy")
 
     val now = Calendar.getInstance()
