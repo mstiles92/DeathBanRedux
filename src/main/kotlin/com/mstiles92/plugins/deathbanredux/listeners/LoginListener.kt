@@ -25,6 +25,8 @@ package com.mstiles92.plugins.deathbanredux.listeners
 
 import com.mstiles92.plugins.deathbanredux.util.getData
 import com.mstiles92.plugins.deathbanredux.util.replaceMessageVariables
+import com.mstiles92.plugins.deathbanredux.util.sendMessageLater
+import com.mstiles92.plugins.deathbanredux.util.tag
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerLoginEvent
@@ -38,9 +40,9 @@ object LoginListener : Listener {
         if (data.isCurrentlyBanned()) {
             if (data.revivalCredits > 0) {
                 data.revivalCredits -= 1
-                event.player.sendMessage("You have ${data.revivalCredits} revival credits remaining.")
+                event.player.sendMessageLater("$tag You have ${data.revivalCredits} revival credits remaining.")
             } else {
-                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, "You are currently banned until %unbantime% %unbandate%".replaceMessageVariables(data))
+                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, "You are currently banned until %unbantime% %unbandate%\n%bantimeleft% remaining.".replaceMessageVariables(data))
             }
         }
     }
