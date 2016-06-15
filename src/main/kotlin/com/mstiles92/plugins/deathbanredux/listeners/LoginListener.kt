@@ -23,6 +23,7 @@
 
 package com.mstiles92.plugins.deathbanredux.listeners
 
+import com.mstiles92.plugins.deathbanredux.config.DeathBanConfig
 import com.mstiles92.plugins.deathbanredux.util.getData
 import com.mstiles92.plugins.deathbanredux.util.replaceMessageVariables
 import com.mstiles92.plugins.deathbanredux.util.sendMessageLater
@@ -37,7 +38,7 @@ object LoginListener : Listener {
     fun onPlayerLogin(event: PlayerLoginEvent) {
         val data = event.player.getData()
 
-        if (data.isCurrentlyBanned()) {
+        if (DeathBanConfig.isEnabled() && data.isCurrentlyBanned()) {
             if (data.revivalCredits > 0) {
                 data.revivalCredits -= 1
                 event.player.sendMessageLater("$tag You have ${data.revivalCredits} revival credits remaining.")
