@@ -46,6 +46,8 @@ data class PlayerData(val uuid: String, var lastSeenName: String, var revivalCre
 
         operator fun get(username: String) : PlayerData? = instances.values.firstOrNull{ it -> it.lastSeenName.equals(username, ignoreCase = true) }
 
+        fun getAllUsernames() : List<String> = instances.map { it -> it.value.lastSeenName }.toCollection(ArrayList())
+
         fun save(file: File, pretty: Boolean = true) {
             val gson = if (pretty) GsonBuilder().setPrettyPrinting().create() else Gson()
 

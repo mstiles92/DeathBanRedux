@@ -24,14 +24,18 @@
 package com.mstiles92.plugins.deathbanredux.commands
 
 import com.mstiles92.plugins.deathbanredux.data.PlayerData
+import com.mstiles92.plugins.deathbanredux.util.autocomplete
 import com.mstiles92.plugins.deathbanredux.util.errorTag
 import com.mstiles92.plugins.deathbanredux.util.getData
 import com.mstiles92.plugins.deathbanredux.util.tag
 import com.mstiles92.plugins.stileslib.commands.Arguments
 import com.mstiles92.plugins.stileslib.commands.CommandHandler
 import com.mstiles92.plugins.stileslib.commands.annotations.Command
+import com.mstiles92.plugins.stileslib.commands.annotations.TabCompleter
+import java.util.*
 
 class CreditsCommandHandler() : CommandHandler {
+    private val emptyList: List<String> = ArrayList()
 
     @Command(name = "credits", aliases = arrayOf("cr"), permission = "deathban.credits.check")
     fun handleDefault(args: Arguments) {
@@ -53,6 +57,21 @@ class CreditsCommandHandler() : CommandHandler {
             } else {
                 args.sender.sendMessage("$errorTag You do not have permission to perform this command.")
             }
+        }
+    }
+
+    @TabCompleter(name = "credits", aliases = arrayOf("cr"))
+    fun completeDefault(args: Arguments) : List<String> {
+        if (args.args.size == 1) {
+            var retVal = listOf("send", "give", "take")
+
+            if (args.sender.hasPermission("deathban.credits.check.others")) {
+                retVal += PlayerData.getAllUsernames()
+            }
+
+            return retVal.autocomplete(args.args[0])
+        } else {
+            return emptyList
         }
     }
 
@@ -86,6 +105,9 @@ class CreditsCommandHandler() : CommandHandler {
         }
     }
 
+    @TabCompleter(name = "credits.send", aliases = arrayOf("cr.send"))
+    fun completeSend(args: Arguments) = if (args.args.size == 1) PlayerData.getAllUsernames().autocomplete(args.args[0]) else emptyList
+
     @Command(name = "credits.give", aliases = arrayOf("cr.give"), permission = "deathban.credits.give")
     fun handleGive(args: Arguments) {
         if (args.args.size < 2) {
@@ -109,6 +131,9 @@ class CreditsCommandHandler() : CommandHandler {
             args.sender.sendMessage("$tag You have successfully given ${otherPlayerData.lastSeenName} $creditsArg revival credits.")
         }
     }
+
+    @TabCompleter(name = "credits.give", aliases = arrayOf("cr.give"))
+    fun completeGive(args: Arguments) = if (args.args.size == 1) PlayerData.getAllUsernames().autocomplete(args.args[0]) else emptyList
 
     @Command(name = "credits.take", aliases = arrayOf("cr.take"), permission = "deathban.credits.take")
     fun handleTake(args: Arguments) {
@@ -139,6 +164,9 @@ class CreditsCommandHandler() : CommandHandler {
             }
         }
     }
+
+    @TabCompleter(name = "credits.take", aliases = arrayOf("cr.take"))
+    fun completeTake(args: Arguments) = if (args.args.size == 1) PlayerData.getAllUsernames().autocomplete(args.args[0]) else emptyList
 
     private fun tryParseInt(toParse: String) : Int {
         try {

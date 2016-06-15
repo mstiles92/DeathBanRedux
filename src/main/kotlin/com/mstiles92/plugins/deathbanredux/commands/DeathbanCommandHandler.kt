@@ -31,10 +31,13 @@ import com.mstiles92.plugins.stileslib.calendar.CalendarUtils
 import com.mstiles92.plugins.stileslib.commands.Arguments
 import com.mstiles92.plugins.stileslib.commands.CommandHandler
 import com.mstiles92.plugins.stileslib.commands.annotations.Command
+import com.mstiles92.plugins.stileslib.commands.annotations.TabCompleter
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import java.util.*
 
 class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
+    private val emptyList: List<String> = ArrayList()
 
     @Command(name = "deathban", aliases = arrayOf("db", "hdb"), permission = "deathban.display")
     fun handleDefault(args: Arguments) {
@@ -53,6 +56,9 @@ class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
 
     }
 
+    @TabCompleter(name = "deathban", aliases = arrayOf("db", "hdb"))
+    fun completeDefault(args: Arguments) = if (args.args.size == 1) arrayListOf("enable", "disable", "ban", "unban", "status").autocomplete(args.args[0]) else emptyList
+
     @Command(name = "deathban.enable", aliases = arrayOf("db.enable", "hdb.enable"), permission = "deathban.enable")
     fun handleEnable(args: Arguments) {
         DeathBanConfig.setEnabled(true)
@@ -63,11 +69,16 @@ class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
         }, DeathBanConfig.getTickDelay().toLong())
     }
 
+    @TabCompleter(name = "deathban.enable", aliases = arrayOf("db.enable", "hdb.enable"))
+    fun completeEnable(args: Arguments) = emptyList
+
     @Command(name = "deathban.disable", aliases = arrayOf("db.disable", "hdb.disable"), permission = "deathban.enable")
     fun handleDisable(args: Arguments) {
         DeathBanConfig.setEnabled(false)
         args.sender.sendMessage("$tag Disabled!")
     }
+    @TabCompleter(name = "deathban.disable", aliases = arrayOf("db.disable", "hdb.disable"))
+    fun completeDisable(args: Arguments) = emptyList
 
     @Command(name = "deathban.ban", aliases = arrayOf("db.ban", "hdb.ban"), permission = "deathban.ban")
     fun handleBan(args: Arguments) {
@@ -102,6 +113,9 @@ class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
         }
     }
 
+    @TabCompleter(name = "deathban.ban", aliases = arrayOf("db.ban", "hdb.ban"))
+    fun completeBan(args: Arguments) = if (args.args.size == 1) PlayerData.getAllUsernames().autocomplete(args.args[0]) else emptyList
+
     @Command(name = "deathban.unban", aliases = arrayOf("db.unban", "hdb.unban"), permission = "deathban.unban")
     fun handleUnban(args: Arguments) {
         if (args.args.size < 1) {
@@ -120,6 +134,9 @@ class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
         }
     }
 
+    @TabCompleter(name = "deathban.unban", aliases = arrayOf("db.unban", "hdb.unban"))
+    fun completeUnban(args: Arguments) = if (args.args.size == 1) PlayerData.getAllUsernames().autocomplete(args.args[0]) else emptyList
+
     @Command(name = "deathban.status", aliases = arrayOf("db.status", "hdb.status"), permission = "deathban.status")
     fun handleStatus(args: Arguments) {
         if (args.args.size < 1) {
@@ -136,4 +153,7 @@ class DeathbanCommandHandler(val plugin: DeathBanRedux) : CommandHandler {
             args.sender.sendMessage("$tag %player% is banned until %unbantime% %unbandate%".replaceMessageVariables(playerData))
         }
     }
+
+    @TabCompleter(name = "deathban.status", aliases = arrayOf("db.status", "hdb.status"))
+    fun completeStatus(args: Arguments) = if (args.args.size == 1) PlayerData.getAllUsernames().autocomplete(args.args[0]) else emptyList
 }

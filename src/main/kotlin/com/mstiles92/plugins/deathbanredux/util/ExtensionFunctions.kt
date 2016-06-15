@@ -65,3 +65,5 @@ fun String.replaceMessageVariables(data: PlayerData?) : String {
 
     return message
 }
+
+fun List<String>.autocomplete(fragment: String) = this.filter { it.toLowerCase().startsWith(fragment.toLowerCase()) }
