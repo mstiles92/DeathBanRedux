@@ -9,7 +9,7 @@ This is a plugin designed for hardcore-style servers, where players are temporar
 <tr><td>/deathban</td>
 <td>Lists all available commands for the plugin</td></tr>
 <tr><td>/deathban enable</td>
-<td>Enable the plugin server-wide (always enabled on server start).</td></tr>
+<td>Enable the plugin server-wide.</td></tr>
 <tr><td>/deathban disable</td>
 <td>Disable the plugin server-wide.</td></tr>
 <tr><td>/deathban ban &lt;player&gt; [time]</td>
