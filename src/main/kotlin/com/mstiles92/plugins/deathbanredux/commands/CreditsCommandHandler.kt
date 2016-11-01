@@ -26,7 +26,6 @@ package com.mstiles92.plugins.deathbanredux.commands
 import com.mstiles92.plugins.deathbanredux.data.PlayerData
 import com.mstiles92.plugins.deathbanredux.util.autocomplete
 import com.mstiles92.plugins.deathbanredux.util.errorTag
-import com.mstiles92.plugins.deathbanredux.util.getData
 import com.mstiles92.plugins.deathbanredux.util.tag
 import com.mstiles92.plugins.stileslib.commands.Arguments
 import com.mstiles92.plugins.stileslib.commands.CommandHandler
@@ -41,7 +40,7 @@ class CreditsCommandHandler() : CommandHandler {
     fun handleDefault(args: Arguments) {
         if (args.args.size < 1) {
             if (args.isPlayer) {
-                args.sender.sendMessage("$tag Revival credits: ${args.player.getData().revivalCredits}")
+                args.sender.sendMessage("$tag Revival credits: ${PlayerData[args.player].revivalCredits}")
             } else {
                 args.sender.sendMessage("$errorTag Only players may check their own credit balance.")
             }
@@ -89,7 +88,7 @@ class CreditsCommandHandler() : CommandHandler {
             return
         }
 
-        val playerData = args.player.getData()
+        val playerData = PlayerData[args.player]
         val otherPlayerData = PlayerData[args.args[0]]
 
         if (otherPlayerData == null) {
