@@ -321,4 +321,146 @@ class CreditsCommandHandlerTest {
 
         Assert.assertEquals(listOf<String>(), retVal)
     }
+
+    @Test
+    fun handleGive_consoleNoArgsProvided_displaysError() {
+        `when`(args.args).thenReturn(arrayOf<String>())
+        `when`(args.sender).thenReturn(console)
+
+        CreditsCommandHandler().handleGive(args)
+
+        verify(console).sendMessage("$errorTag You must specify both a player and an amount to give that player.")
+    }
+
+    @Test
+    fun handleGive_playerNoArgsProvided_displaysError() {
+        `when`(args.args).thenReturn(arrayOf<String>())
+        `when`(args.sender).thenReturn(player1)
+
+        CreditsCommandHandler().handleGive(args)
+
+        verify(player1).sendMessage("$errorTag You must specify both a player and an amount to give that player.")
+    }
+
+    @Test
+    fun handleGive_consoleSingleArgProvided_displaysError() {
+        `when`(args.args).thenReturn(arrayOf("Player1"))
+        `when`(args.sender).thenReturn(console)
+
+        CreditsCommandHandler().handleGive(args)
+
+        verify(console).sendMessage("$errorTag You must specify both a player and an amount to give that player.")
+    }
+
+    @Test
+    fun handleGive_playerSingleArgProvided_displaysError() {
+        `when`(args.args).thenReturn(arrayOf("Slayer"))
+        `when`(args.sender).thenReturn(player1)
+
+        CreditsCommandHandler().handleGive(args)
+
+        verify(player1).sendMessage("$errorTag You must specify both a player and an amount to give that player.")
+    }
+
+    @Test
+    fun handleGive_consoleStringAmountProvided_displaysError() {
+        `when`(args.args).thenReturn(arrayOf("Player1", "test"))
+        `when`(args.sender).thenReturn(console)
+
+        CreditsCommandHandler().handleGive(args)
+
+        verify(console).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+    }
+
+    @Test
+    fun handleGive_playerStringAmountProvided_displaysError() {
+        `when`(args.args).thenReturn(arrayOf("Slayer", "test"))
+        `when`(args.sender).thenReturn(player1)
+
+        CreditsCommandHandler().handleGive(args)
+
+        verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+    }
+
+    @Test
+    fun handleGive_consoleNegativeAmountProvided_displaysError() {
+        `when`(args.args).thenReturn(arrayOf("Player1", "-2"))
+        `when`(args.sender).thenReturn(console)
+
+        CreditsCommandHandler().handleGive(args)
+
+        verify(console).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+    }
+
+    @Test
+    fun handleGive_playerNegativeAmountProvided_displaysError() {
+        `when`(args.args).thenReturn(arrayOf("Slayer", "-5"))
+        `when`(args.sender).thenReturn(player1)
+
+        CreditsCommandHandler().handleGive(args)
+
+        verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+    }
+
+    @Test
+    fun handleGive_consoleZeroAmountProvided_displaysError() {
+        `when`(args.args).thenReturn(arrayOf("Player1", "0"))
+        `when`(args.sender).thenReturn(console)
+
+        CreditsCommandHandler().handleGive(args)
+
+        verify(console).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+    }
+
+    @Test
+    fun handleGive_playerZeroAmountProvided_displaysError() {
+        `when`(args.args).thenReturn(arrayOf("Slayer", "0"))
+        `when`(args.sender).thenReturn(player1)
+
+        CreditsCommandHandler().handleGive(args)
+
+        verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+    }
+
+    @Test
+    fun handleGive_consoleInvalidPlayerSpecified_displaysError() {
+        `when`(args.args).thenReturn(arrayOf("Player3", "2"))
+        `when`(args.sender).thenReturn(console)
+
+        CreditsCommandHandler().handleGive(args)
+
+        verify(console).sendMessage("$errorTag The specified player could not be found.")
+    }
+
+    @Test
+    fun handleGive_playerInvalidPlayerSpecified_displaysError() {
+        `when`(args.args).thenReturn(arrayOf("Player3", "5"))
+        `when`(args.sender).thenReturn(player1)
+
+        CreditsCommandHandler().handleGive(args)
+
+        verify(player1).sendMessage("$errorTag The specified player could not be found.")
+    }
+
+    @Test
+    fun handleGive_consoleValidArgsProvided_givesCredits() {
+        `when`(args.args).thenReturn(arrayOf("Player1", "2"))
+        `when`(args.sender).thenReturn(console)
+
+        CreditsCommandHandler().handleGive(args)
+
+        Assert.assertEquals(7, PlayerData[player1].revivalCredits)
+        verify(console).sendMessage("$tag You have successfully given Player1 2 revival credits.")
+    }
+
+    @Test
+    fun handleGive_playerValidArgsProvided_givesCredits() {
+        `when`(args.args).thenReturn(arrayOf("Slayer", "5"))
+        `when`(args.sender).thenReturn(player1)
+
+        CreditsCommandHandler().handleGive(args)
+
+        Assert.assertEquals(6, PlayerData[player2].revivalCredits)
+        verify(player1).sendMessage("$tag You have successfully given Slayer 5 revival credits.")
+    }
 }
