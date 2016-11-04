@@ -463,4 +463,87 @@ class CreditsCommandHandlerTest {
         Assert.assertEquals(6, PlayerData[player2].revivalCredits)
         verify(player1).sendMessage("$tag You have successfully given Slayer 5 revival credits.")
     }
+
+
+
+
+
+
+    @Test
+    fun completeGive_noArgsProvided_returnsEmptyList() {
+        `when`(args.args).thenReturn(arrayOf())
+
+        val retVal = CreditsCommandHandler().completeGive(args)
+
+        Assert.assertEquals(listOf<String>(), retVal)
+    }
+
+    @Test
+    fun completeGive_singleArgProvided_returnsCorrectUsername() {
+        `when`(args.args).thenReturn(arrayOf("P"))
+
+        val retVal = CreditsCommandHandler().completeGive(args)
+
+        Assert.assertEquals(listOf("Player1"), retVal)
+    }
+
+    @Test
+    fun completeGive_singleArgProvidedCaseInsensitive_returnsCorrectUsername() {
+        `when`(args.args).thenReturn(arrayOf("play"))
+
+        val retVal = CreditsCommandHandler().completeGive(args)
+
+        Assert.assertEquals(listOf("Player1"), retVal)
+    }
+
+    @Test
+    fun completeGive_twoArgsProvided_returnsEmptyList() {
+        `when`(args.args).thenReturn(arrayOf("Player1", "2"))
+
+        val retVal = CreditsCommandHandler().completeGive(args)
+
+        Assert.assertEquals(listOf<String>(), retVal)
+    }
+
+
+
+
+
+
+
+    @Test
+    fun completeTake_noArgsProvided_returnsEmptyList() {
+        `when`(args.args).thenReturn(arrayOf())
+
+        val retVal = CreditsCommandHandler().completeTake(args)
+
+        Assert.assertEquals(listOf<String>(), retVal)
+    }
+
+    @Test
+    fun completeTake_singleArgProvided_returnsCorrectUsername() {
+        `when`(args.args).thenReturn(arrayOf("P"))
+
+        val retVal = CreditsCommandHandler().completeTake(args)
+
+        Assert.assertEquals(listOf("Player1"), retVal)
+    }
+
+    @Test
+    fun completeTake_singleArgProvidedCaseInsensitive_returnsCorrectUsername() {
+        `when`(args.args).thenReturn(arrayOf("play"))
+
+        val retVal = CreditsCommandHandler().completeTake(args)
+
+        Assert.assertEquals(listOf("Player1"), retVal)
+    }
+
+    @Test
+    fun completeTake_twoArgsProvided_returnsEmptyList() {
+        `when`(args.args).thenReturn(arrayOf("Player1", "2"))
+
+        val retVal = CreditsCommandHandler().completeTake(args)
+
+        Assert.assertEquals(listOf<String>(), retVal)
+    }
 }
