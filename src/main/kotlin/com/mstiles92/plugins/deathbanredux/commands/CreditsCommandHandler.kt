@@ -51,7 +51,7 @@ class CreditsCommandHandler() : CommandHandler {
                 if (otherPlayerData == null) {
                     args.sender.sendMessage("$errorTag The specified player could not be found.")
                 } else {
-                    args.sender.sendMessage("$tag ${otherPlayerData.lastSeenName}'s revivial credits: ${otherPlayerData.revivalCredits}")
+                    args.sender.sendMessage("$tag ${otherPlayerData.lastSeenName}'s revival credits: ${otherPlayerData.revivalCredits}")
                 }
             } else {
                 args.sender.sendMessage("$errorTag You do not have permission to perform this command.")
