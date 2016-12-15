@@ -27,6 +27,7 @@ import com.mstiles92.plugins.deathbanredux.data.PlayerData
 import com.mstiles92.plugins.deathbanredux.util.errorTag
 import com.mstiles92.plugins.deathbanredux.util.tag
 import com.mstiles92.plugins.stileslib.commands.Arguments
+import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
 import org.junit.Assert
@@ -65,485 +66,563 @@ class CreditsCommandHandlerTest {
         args = mock(Arguments::class.java)
     }
 
-    @Test
-    fun handleDefault_playerWithNoArgs_displaysOwnCredits() {
-        `when`(args.sender).thenReturn(player1)
-        `when`(args.args).thenReturn(arrayOf())
-        `when`(args.isPlayer).thenReturn(true)
-        `when`(args.player).thenReturn(player1)
-
-        CreditsCommandHandler().handleDefault(args)
-
-        verify(player1).sendMessage("$tag Revival credits: 5")
+    private fun mockArgs(sender: CommandSender, args: Array<String>) : Arguments {
+        val mock = mock(Arguments::class.java)
+        `when`(mock.sender).thenReturn(sender)
+        `when`(mock.args).thenReturn(args)
+        `when`(mock.isPlayer).thenReturn(sender is Player)
+        `when`(mock.player).thenReturn(if (sender is Player) sender else null)
+        return mock
     }
 
     @Test
-    fun handleDefault_consoleWithNoArgs_displaysErrorMessage() {
-        `when`(args.sender).thenReturn(console)
-        `when`(args.args).thenReturn(arrayOf())
-        `when`(args.isPlayer).thenReturn(false)
-        `when`(args.player).thenReturn(null)
-
-        CreditsCommandHandler().handleDefault(args)
-
+    fun handleDefault_checkOwnCredits() {
+        CreditsCommandHandler().handleDefault(mockArgs(console, arrayOf()))
         verify(console).sendMessage("$errorTag Only players may check their own credit balance.")
+
+        CreditsCommandHandler().handleDefault(mockArgs(player1, arrayOf()))
+        verify(player1).sendMessage("$tag Revival credits: 5")
+
+        CreditsCommandHandler().handleDefault(mockArgs(player2, arrayOf()))
+        verify(player2).sendMessage("$tag Revival credits: 1")
     }
 
     @Test
-    fun handleDefault_playerWithoutCheckOthersPerms_displaysErrorMessage() {
-        `when`(args.sender).thenReturn(player2)
-        `when`(args.args).thenReturn(arrayOf("Player1"))
-        `when`(args.isPlayer).thenReturn(true)
-        `when`(args.player).thenReturn(player2)
+    fun handleDefault_checkOtherCredits() {
+        CreditsCommandHandler().handleDefault(mockArgs(console, arrayOf("Player1")))
+        verify(console).sendMessage("$tag Player1's revival credits: 5")
 
-        CreditsCommandHandler().handleDefault(args)
+        CreditsCommandHandler().handleDefault(mockArgs(player1, arrayOf("Slayer")))
+        verify(player1).sendMessage("$tag Slayer's revival credits: 1")
 
+        CreditsCommandHandler().handleDefault(mockArgs(player2, arrayOf("Player1")))
         verify(player2).sendMessage("$errorTag You do not have permission to perform this command.")
     }
 
     @Test
-    fun handleDefault_consoleWithoutCheckOthersPerms_displaysErrorMessage() {
-        `when`(args.sender).thenReturn(console)
-        `when`(args.args).thenReturn(arrayOf("Slayer"))
-        `when`(args.isPlayer).thenReturn(false)
-        `when`(args.player).thenReturn(null)
-        `when`(console.hasPermission("deathban.credits.check.others")).thenReturn(false)
+    fun handleDefault_checkOtherCreditsCaseInsensitive() {
+        CreditsCommandHandler().handleDefault(mockArgs(console, arrayOf("player1")))
+        verify(console).sendMessage("$tag Player1's revival credits: 5")
 
-        CreditsCommandHandler().handleDefault(args)
+        CreditsCommandHandler().handleDefault(mockArgs(player1, arrayOf("slayer")))
+        verify(player1).sendMessage("$tag Slayer's revival credits: 1")
 
-        verify(console).sendMessage("$errorTag You do not have permission to perform this command.")
+        CreditsCommandHandler().handleDefault(mockArgs(player2, arrayOf("player1")))
+        verify(player2).sendMessage("$errorTag You do not have permission to perform this command.")
     }
 
     @Test
-    fun handleDefault_playerCheckOtherInvalidPlayer_displaysErrorMessage() {
-        `when`(args.sender).thenReturn(player1)
-        `when`(args.args).thenReturn(arrayOf("Player3"))
-        `when`(args.isPlayer).thenReturn(true)
-        `when`(args.player).thenReturn(player1)
-
-        CreditsCommandHandler().handleDefault(args)
-
-        verify(player1).sendMessage("$errorTag The specified player could not be found.")
-    }
-
-    @Test
-    fun handleDefault_playerCheckOtherValidPlayer_displaysCredits() {
-        `when`(args.sender).thenReturn(player1)
-        `when`(args.args).thenReturn(arrayOf("Slayer"))
-        `when`(args.isPlayer).thenReturn(true)
-        `when`(args.player).thenReturn(player1)
-
-        CreditsCommandHandler().handleDefault(args)
-
-        verify(player1).sendMessage("$tag Slayer's revivial credits: 1")
-    }
-
-    @Test
-    fun handleDefault_consoleCheckInvalidPlayer_displaysErrorMessage() {
-        `when`(args.sender).thenReturn(console)
-        `when`(args.args).thenReturn(arrayOf("Player3"))
-        `when`(args.isPlayer).thenReturn(false)
-        `when`(args.player).thenReturn(null)
-
-        CreditsCommandHandler().handleDefault(args)
-
+    fun handleDefault_checkOtherCreditsInvalidPlayer() {
+        CreditsCommandHandler().handleDefault(mockArgs(console, arrayOf("invalid")))
         verify(console).sendMessage("$errorTag The specified player could not be found.")
-    }
 
-    @Test
-    fun handleDefault_consoleCheckValidPlayer_displaysCredits() {
-        `when`(args.sender).thenReturn(console)
-        `when`(args.args).thenReturn(arrayOf("Player1"))
-        `when`(args.isPlayer).thenReturn(false)
-        `when`(args.player).thenReturn(null)
-
-        CreditsCommandHandler().handleDefault(args)
-
-        verify(console).sendMessage("$tag Player1's revivial credits: 5")
-    }
-
-    @Test
-    fun completeDefault_noArgsProvidedNoPerms_returnsEmptyList() {
-        `when`(args.sender).thenReturn(player2)
-        `when`(args.args).thenReturn(arrayOf())
-
-        val retVal = CreditsCommandHandler().completeDefault(args)
-
-        Assert.assertEquals(listOf<String>(), retVal)
-    }
-
-    @Test
-    fun completeDefault_noPerms_returnsSubcommand() {
-        `when`(args.sender).thenReturn(player2)
-        `when`(args.args).thenReturn(arrayOf("g"))
-
-        val retVal = CreditsCommandHandler().completeDefault(args)
-
-        Assert.assertEquals(listOf("give"), retVal)
-    }
-
-    @Test
-    fun completeDefault_withPerms_returnsPlayerNames() {
-        `when`(args.sender).thenReturn(console)
-        `when`(args.args).thenReturn(arrayOf("P"))
-
-        val retVal = CreditsCommandHandler().completeDefault(args)
-
-        Assert.assertEquals(listOf("Player1"), retVal)
-    }
-
-    @Test
-    fun completeDefault_withPerms_returnsUserAndSubcommand() {
-        `when`(args.sender).thenReturn(console)
-        `when`(args.args).thenReturn(arrayOf("s"))
-
-        val retVal = CreditsCommandHandler().completeDefault(args)
-
-        Assert.assertEquals(listOf("send", "Slayer"), retVal)
-    }
-
-    @Test
-    fun handleSend_noArgsProvided_displaysError() {
-        `when`(args.args).thenReturn(arrayOf())
-        `when`(args.player).thenReturn(player1)
-
-        CreditsCommandHandler().handleSend(args)
-
-        verify(player1).sendMessage("$errorTag You must specify both a player and an amount to send to that player.")
-    }
-
-    @Test
-    fun handleSend_insufficientArgsProvided_displaysError() {
-        `when`(args.args).thenReturn(arrayOf("Slayer"))
-        `when`(args.player).thenReturn(player1)
-
-        CreditsCommandHandler().handleSend(args)
-
-        verify(player1).sendMessage("$errorTag You must specify both a player and an amount to send to that player.")
-    }
-
-    @Test
-    fun handleSend_stringCreditAmount_displaysError() {
-        `when`(args.args).thenReturn(arrayOf("Slayer2", "invalid"))
-        `when`(args.player).thenReturn(player1)
-
-        CreditsCommandHandler().handleSend(args)
-
-        verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
-    }
-
-    @Test
-    fun handleSend_negativeCreditAmount_displaysError() {
-        `when`(args.args).thenReturn(arrayOf("Slayer2", "-5"))
-        `when`(args.player).thenReturn(player1)
-
-        CreditsCommandHandler().handleSend(args)
-
-        verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
-    }
-
-    @Test
-    fun handleSend_invalidPlayerSpecified_displaysError() {
-        `when`(args.args).thenReturn(arrayOf("Player3", "1"))
-        `when`(args.player).thenReturn(player1)
-
-        CreditsCommandHandler().handleSend(args)
-
+        CreditsCommandHandler().handleDefault(mockArgs(player1, arrayOf("invalid")))
         verify(player1).sendMessage("$errorTag The specified player could not be found.")
+
+        CreditsCommandHandler().handleDefault(mockArgs(player2, arrayOf("invalid")))
+        verify(player2).sendMessage("$errorTag You do not have permission to perform this command.")
     }
 
     @Test
-    fun handleSend_notEnoughCredits_displaysError() {
-        `when`(args.args).thenReturn(arrayOf("Slayer", "10"))
-        `when`(args.player).thenReturn(player1)
+    fun completeDefault_noArgs() {
+        var result = CreditsCommandHandler().completeDefault(mockArgs(console, arrayOf()))
+        Assert.assertEquals(listOf<String>(), result)
 
-        CreditsCommandHandler().handleSend(args)
+        result = CreditsCommandHandler().completeDefault(mockArgs(player1, arrayOf()))
+        Assert.assertEquals(listOf<String>(), result)
 
+        result = CreditsCommandHandler().completeDefault(mockArgs(player2, arrayOf()))
+        Assert.assertEquals(listOf<String>(), result)
+    }
+
+    @Test
+    fun completeDefault_subcommandOnly() {
+        var result = CreditsCommandHandler().completeDefault(mockArgs(console, arrayOf("g")))
+        Assert.assertEquals(listOf("give"), result)
+
+        result = CreditsCommandHandler().completeDefault(mockArgs(player1, arrayOf("g")))
+        Assert.assertEquals(listOf("give"), result)
+
+        result = CreditsCommandHandler().completeDefault(mockArgs(player2, arrayOf("g")))
+        Assert.assertEquals(listOf("give"), result)
+    }
+
+    @Test
+    fun completeDefault_playerNameOnly() {
+        var result = CreditsCommandHandler().completeDefault(mockArgs(console, arrayOf("P")))
+        Assert.assertEquals(listOf("Player1"), result)
+
+        result = CreditsCommandHandler().completeDefault(mockArgs(player1, arrayOf("P")))
+        Assert.assertEquals(listOf("Player1"), result)
+
+        result = CreditsCommandHandler().completeDefault(mockArgs(player2, arrayOf("P")))
+        Assert.assertEquals(listOf<String>(), result)
+    }
+
+    @Test
+    fun completeDefault_playerNameOnlyCaseInsensitive() {
+        var result = CreditsCommandHandler().completeDefault(mockArgs(console, arrayOf("p")))
+        Assert.assertEquals(listOf("Player1"), result)
+
+        result = CreditsCommandHandler().completeDefault(mockArgs(player1, arrayOf("p")))
+        Assert.assertEquals(listOf("Player1"), result)
+
+        result = CreditsCommandHandler().completeDefault(mockArgs(player2, arrayOf("p")))
+        Assert.assertEquals(listOf<String>(), result)
+    }
+
+    @Test
+    fun completeDefault_subcommandAndPlayerName() {
+        var result = CreditsCommandHandler().completeDefault(mockArgs(console, arrayOf("s")))
+        Assert.assertEquals(listOf("send", "Slayer"), result)
+
+        result = CreditsCommandHandler().completeDefault(mockArgs(player1, arrayOf("s")))
+        Assert.assertEquals(listOf("send", "Slayer"), result)
+
+        result = CreditsCommandHandler().completeDefault(mockArgs(player2, arrayOf("s")))
+        Assert.assertEquals(listOf("send"), result)
+    }
+
+    @Test
+    fun handleSend_noArgs() {
+        CreditsCommandHandler().handleSend(mockArgs(player1, arrayOf()))
+        verify(player1).sendMessage("$errorTag You must specify both a player and an amount to send to that player.")
+
+        CreditsCommandHandler().handleSend(mockArgs(player2, arrayOf()))
+        verify(player2).sendMessage("$errorTag You must specify both a player and an amount to send to that player.")
+    }
+
+    @Test
+    fun handleSend_insufficientArgs() {
+        CreditsCommandHandler().handleSend(mockArgs(player1, arrayOf("Slayer")))
+        verify(player1).sendMessage("$errorTag You must specify both a player and an amount to send to that player.")
+
+        CreditsCommandHandler().handleSend(mockArgs(player2, arrayOf("Player1")))
+        verify(player2).sendMessage("$errorTag You must specify both a player and an amount to send to that player.")
+    }
+
+    @Test
+    fun handleSend_stringCreditAmount() {
+        CreditsCommandHandler().handleSend(mockArgs(player1, arrayOf("Slayer", "invalid")))
+        verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleSend(mockArgs(player2, arrayOf("Player1", "invalid")))
+        verify(player2).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+    }
+
+    @Test
+    fun handleSend_negativeCreditAmount() {
+        CreditsCommandHandler().handleSend(mockArgs(player1, arrayOf("Slayer", "-5")))
+        verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleSend(mockArgs(player2, arrayOf("Player1", "-5")))
+        verify(player2).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+    }
+
+    @Test
+    fun handleSend_zeroCreditAmount() {
+        CreditsCommandHandler().handleSend(mockArgs(player1, arrayOf("Slayer", "0")))
+        verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleSend(mockArgs(player2, arrayOf("Player1", "0")))
+        verify(player2).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+    }
+
+    @Test
+    fun handleSend_invalidPlayerName() {
+        CreditsCommandHandler().handleSend(mockArgs(player1, arrayOf("invalid", "1")))
+        verify(player1).sendMessage("$errorTag The specified player could not be found.")
+
+        CreditsCommandHandler().handleSend(mockArgs(player2, arrayOf("invalid", "1")))
+        verify(player2).sendMessage("$errorTag The specified player could not be found.")
+    }
+
+    @Test
+    fun handleSend_notEnoughCredits() {
+        CreditsCommandHandler().handleSend(mockArgs(player1, arrayOf("Slayer", "10")))
         verify(player1).sendMessage("$errorTag You do not have enough revival credits.")
+
+        CreditsCommandHandler().handleSend(mockArgs(player2, arrayOf("Player1", "10")))
+        verify(player2).sendMessage("$errorTag You do not have enough revival credits.")
     }
 
     @Test
-    fun handleSend_validArgsProvided_sendsCredits() {
-        `when`(args.args).thenReturn(arrayOf("Slayer", "3"))
-        `when`(args.player).thenReturn(player1)
-
-        CreditsCommandHandler().handleSend(args)
-
+    fun handleSend_validArgs() {
+        CreditsCommandHandler().handleSend(mockArgs(player1, arrayOf("Slayer", "3")))
         verify(player1).sendMessage("$tag You have successfully sent Slayer 3 revival credits.")
         Assert.assertEquals(2, PlayerData[player1].revivalCredits)
         Assert.assertEquals(4, PlayerData[player2].revivalCredits)
+
+        CreditsCommandHandler().handleSend(mockArgs(player2, arrayOf("Player1", "2")))
+        verify(player2).sendMessage("$tag You have successfully sent Player1 2 revival credits.")
+        Assert.assertEquals(4, PlayerData[player1].revivalCredits)
+        Assert.assertEquals(2, PlayerData[player2].revivalCredits)
     }
 
     @Test
-    fun handleSend_validArgsProvidedCaseInsensitive_sendsCredits() {
-        `when`(args.args).thenReturn(arrayOf("slayer", "2"))
-        `when`(args.player).thenReturn(player1)
+    fun handleSend_validArgsCaseInsensitive() {
+        CreditsCommandHandler().handleSend(mockArgs(player1, arrayOf("slayer", "3")))
+        verify(player1).sendMessage("$tag You have successfully sent Slayer 3 revival credits.")
+        Assert.assertEquals(2, PlayerData[player1].revivalCredits)
+        Assert.assertEquals(4, PlayerData[player2].revivalCredits)
 
-        CreditsCommandHandler().handleSend(args)
-
-        verify(player1).sendMessage("$tag You have successfully sent Slayer 2 revival credits.")
-        Assert.assertEquals(3, PlayerData[player1].revivalCredits)
-        Assert.assertEquals(3, PlayerData[player2].revivalCredits)
+        CreditsCommandHandler().handleSend(mockArgs(player2, arrayOf("player1", "2")))
+        verify(player2).sendMessage("$tag You have successfully sent Player1 2 revival credits.")
+        Assert.assertEquals(4, PlayerData[player1].revivalCredits)
+        Assert.assertEquals(2, PlayerData[player2].revivalCredits)
     }
 
     @Test
-    fun completeSend_noArgsProvided_returnsEmptyList() {
-        `when`(args.args).thenReturn(arrayOf())
+    fun completeSend_noArgs() {
+        var result = CreditsCommandHandler().completeSend(mockArgs(player1, arrayOf()))
+        Assert.assertEquals(listOf<String>(), result)
 
-        val retVal = CreditsCommandHandler().completeSend(args)
-
-        Assert.assertEquals(listOf<String>(), retVal)
+        result = CreditsCommandHandler().completeSend(mockArgs(player2, arrayOf()))
+        Assert.assertEquals(listOf<String>(), result)
     }
 
     @Test
-    fun completeSend_singleArgProvided_returnsCorrectUsername() {
-        `when`(args.args).thenReturn(arrayOf("P"))
+    fun completeSend_singleArg() {
+        var result = CreditsCommandHandler().completeSend(mockArgs(player1, arrayOf("S")))
+        Assert.assertEquals(listOf("Slayer"), result)
 
-        val retVal = CreditsCommandHandler().completeSend(args)
-
-        Assert.assertEquals(listOf("Player1"), retVal)
+        result = CreditsCommandHandler().completeSend(mockArgs(player2, arrayOf("P")))
+        Assert.assertEquals(listOf("Player1"), result)
     }
 
     @Test
-    fun completeSend_singleArgProvidedCaseInsensitive_returnsCorrectUsername() {
-        `when`(args.args).thenReturn(arrayOf("play"))
+    fun completeSend_singleArgCaseInsensitive() {
+        var result = CreditsCommandHandler().completeSend(mockArgs(player1, arrayOf("s")))
+        Assert.assertEquals(listOf("Slayer"), result)
 
-        val retVal = CreditsCommandHandler().completeSend(args)
-
-        Assert.assertEquals(listOf("Player1"), retVal)
+        result = CreditsCommandHandler().completeSend(mockArgs(player2, arrayOf("p")))
+        Assert.assertEquals(listOf("Player1"), result)
     }
 
     @Test
-    fun completeSend_twoArgsProvided_returnsEmptyList() {
-        `when`(args.args).thenReturn(arrayOf("Player1", "2"))
+    fun completeSend_twoArgs() {
+        var result = CreditsCommandHandler().completeSend(mockArgs(player1, arrayOf("Slayer", "2")))
+        Assert.assertEquals(listOf<String>(), result)
 
-        val retVal = CreditsCommandHandler().completeSend(args)
-
-        Assert.assertEquals(listOf<String>(), retVal)
+        result = CreditsCommandHandler().completeSend(mockArgs(player2, arrayOf("Player1", "2")))
+        Assert.assertEquals(listOf<String>(), result)
     }
 
     @Test
-    fun handleGive_consoleNoArgsProvided_displaysError() {
-        `when`(args.args).thenReturn(arrayOf<String>())
-        `when`(args.sender).thenReturn(console)
-
-        CreditsCommandHandler().handleGive(args)
-
+    fun handleGive_noArgs() {
+        CreditsCommandHandler().handleGive(mockArgs(console, arrayOf()))
         verify(console).sendMessage("$errorTag You must specify both a player and an amount to give that player.")
-    }
 
-    @Test
-    fun handleGive_playerNoArgsProvided_displaysError() {
-        `when`(args.args).thenReturn(arrayOf<String>())
-        `when`(args.sender).thenReturn(player1)
-
-        CreditsCommandHandler().handleGive(args)
-
+        CreditsCommandHandler().handleGive(mockArgs(player1, arrayOf()))
         verify(player1).sendMessage("$errorTag You must specify both a player and an amount to give that player.")
+
+        CreditsCommandHandler().handleGive(mockArgs(player2, arrayOf()))
+        verify(player2).sendMessage("$errorTag You must specify both a player and an amount to give that player.")
     }
 
     @Test
-    fun handleGive_consoleSingleArgProvided_displaysError() {
-        `when`(args.args).thenReturn(arrayOf("Player1"))
-        `when`(args.sender).thenReturn(console)
-
-        CreditsCommandHandler().handleGive(args)
-
+    fun handleGive_singleArg() {
+        CreditsCommandHandler().handleGive(mockArgs(console, arrayOf("Player1")))
         verify(console).sendMessage("$errorTag You must specify both a player and an amount to give that player.")
-    }
 
-    @Test
-    fun handleGive_playerSingleArgProvided_displaysError() {
-        `when`(args.args).thenReturn(arrayOf("Slayer"))
-        `when`(args.sender).thenReturn(player1)
-
-        CreditsCommandHandler().handleGive(args)
-
+        CreditsCommandHandler().handleGive(mockArgs(player1, arrayOf("Slayer")))
         verify(player1).sendMessage("$errorTag You must specify both a player and an amount to give that player.")
+
+        CreditsCommandHandler().handleGive(mockArgs(player2, arrayOf("Player1")))
+        verify(player2).sendMessage("$errorTag You must specify both a player and an amount to give that player.")
     }
 
     @Test
-    fun handleGive_consoleStringAmountProvided_displaysError() {
-        `when`(args.args).thenReturn(arrayOf("Player1", "test"))
-        `when`(args.sender).thenReturn(console)
-
-        CreditsCommandHandler().handleGive(args)
-
+    fun handleGive_stringCreditAmount() {
+        CreditsCommandHandler().handleGive(mockArgs(console, arrayOf("Player1", "invalid")))
         verify(console).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
-    }
 
-    @Test
-    fun handleGive_playerStringAmountProvided_displaysError() {
-        `when`(args.args).thenReturn(arrayOf("Slayer", "test"))
-        `when`(args.sender).thenReturn(player1)
-
-        CreditsCommandHandler().handleGive(args)
-
+        CreditsCommandHandler().handleGive(mockArgs(player1, arrayOf("Slayer", "invalid")))
         verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleGive(mockArgs(player2, arrayOf("Player1", "invalid")))
+        verify(player2).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
     }
 
     @Test
-    fun handleGive_consoleNegativeAmountProvided_displaysError() {
-        `when`(args.args).thenReturn(arrayOf("Player1", "-2"))
-        `when`(args.sender).thenReturn(console)
-
-        CreditsCommandHandler().handleGive(args)
-
+    fun handleGive_negativeCreditAmount() {
+        CreditsCommandHandler().handleGive(mockArgs(console, arrayOf("Player1", "-1")))
         verify(console).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
-    }
 
-    @Test
-    fun handleGive_playerNegativeAmountProvided_displaysError() {
-        `when`(args.args).thenReturn(arrayOf("Slayer", "-5"))
-        `when`(args.sender).thenReturn(player1)
-
-        CreditsCommandHandler().handleGive(args)
-
+        CreditsCommandHandler().handleGive(mockArgs(player1, arrayOf("Slayer", "-1")))
         verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleGive(mockArgs(player2, arrayOf("Player1", "-1")))
+        verify(player2).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
     }
 
     @Test
-    fun handleGive_consoleZeroAmountProvided_displaysError() {
-        `when`(args.args).thenReturn(arrayOf("Player1", "0"))
-        `when`(args.sender).thenReturn(console)
-
-        CreditsCommandHandler().handleGive(args)
-
+    fun handleGive_zeroCreditAmount() {
+        CreditsCommandHandler().handleGive(mockArgs(console, arrayOf("Player1", "0")))
         verify(console).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
-    }
 
-    @Test
-    fun handleGive_playerZeroAmountProvided_displaysError() {
-        `when`(args.args).thenReturn(arrayOf("Slayer", "0"))
-        `when`(args.sender).thenReturn(player1)
-
-        CreditsCommandHandler().handleGive(args)
-
+        CreditsCommandHandler().handleGive(mockArgs(player1, arrayOf("Slayer", "0")))
         verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleGive(mockArgs(player2, arrayOf("Player1", "0")))
+        verify(player2).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
     }
 
     @Test
-    fun handleGive_consoleInvalidPlayerSpecified_displaysError() {
-        `when`(args.args).thenReturn(arrayOf("Player3", "2"))
-        `when`(args.sender).thenReturn(console)
-
-        CreditsCommandHandler().handleGive(args)
-
+    fun handleGive_invalidPlayerName() {
+        CreditsCommandHandler().handleGive(mockArgs(console, arrayOf("invalid", "1")))
         verify(console).sendMessage("$errorTag The specified player could not be found.")
-    }
 
-    @Test
-    fun handleGive_playerInvalidPlayerSpecified_displaysError() {
-        `when`(args.args).thenReturn(arrayOf("Player3", "5"))
-        `when`(args.sender).thenReturn(player1)
-
-        CreditsCommandHandler().handleGive(args)
-
+        CreditsCommandHandler().handleGive(mockArgs(player1, arrayOf("invalid", "1")))
         verify(player1).sendMessage("$errorTag The specified player could not be found.")
+
+        CreditsCommandHandler().handleGive(mockArgs(player2, arrayOf("invalid", "1")))
+        verify(player2).sendMessage("$errorTag The specified player could not be found.")
     }
 
     @Test
-    fun handleGive_consoleValidArgsProvided_givesCredits() {
-        `when`(args.args).thenReturn(arrayOf("Player1", "2"))
-        `when`(args.sender).thenReturn(console)
-
-        CreditsCommandHandler().handleGive(args)
-
-        Assert.assertEquals(7, PlayerData[player1].revivalCredits)
+    fun handleGive_validArgs() {
+        CreditsCommandHandler().handleGive(mockArgs(console, arrayOf("Player1", "2")))
         verify(console).sendMessage("$tag You have successfully given Player1 2 revival credits.")
+        Assert.assertEquals(7, PlayerData[player1].revivalCredits)
+
+        CreditsCommandHandler().handleGive(mockArgs(player1, arrayOf("Slayer", "2")))
+        verify(player1).sendMessage("$tag You have successfully given Slayer 2 revival credits.")
+        Assert.assertEquals(3, PlayerData[player2].revivalCredits)
+
+        CreditsCommandHandler().handleGive(mockArgs(player2, arrayOf("Player1", "2")))
+        verify(player2).sendMessage("$tag You have successfully given Player1 2 revival credits.")
+        Assert.assertEquals(9, PlayerData[player1].revivalCredits)
     }
 
     @Test
-    fun handleGive_playerValidArgsProvided_givesCredits() {
-        `when`(args.args).thenReturn(arrayOf("Slayer", "5"))
-        `when`(args.sender).thenReturn(player1)
+    fun handleGive_validArgsCaseInsensitive() {
+        CreditsCommandHandler().handleGive(mockArgs(console, arrayOf("player1", "2")))
+        verify(console).sendMessage("$tag You have successfully given Player1 2 revival credits.")
+        Assert.assertEquals(7, PlayerData[player1].revivalCredits)
 
-        CreditsCommandHandler().handleGive(args)
+        CreditsCommandHandler().handleGive(mockArgs(player1, arrayOf("slayer", "2")))
+        verify(player1).sendMessage("$tag You have successfully given Slayer 2 revival credits.")
+        Assert.assertEquals(3, PlayerData[player2].revivalCredits)
 
-        Assert.assertEquals(6, PlayerData[player2].revivalCredits)
-        verify(player1).sendMessage("$tag You have successfully given Slayer 5 revival credits.")
-    }
-
-
-
-
-
-
-    @Test
-    fun completeGive_noArgsProvided_returnsEmptyList() {
-        `when`(args.args).thenReturn(arrayOf())
-
-        val retVal = CreditsCommandHandler().completeGive(args)
-
-        Assert.assertEquals(listOf<String>(), retVal)
+        CreditsCommandHandler().handleGive(mockArgs(player2, arrayOf("player1", "2")))
+        verify(player2).sendMessage("$tag You have successfully given Player1 2 revival credits.")
+        Assert.assertEquals(9, PlayerData[player1].revivalCredits)
     }
 
     @Test
-    fun completeGive_singleArgProvided_returnsCorrectUsername() {
-        `when`(args.args).thenReturn(arrayOf("P"))
+    fun completeGive_noArgs() {
+        var result = CreditsCommandHandler().completeGive(mockArgs(console, arrayOf()))
+        Assert.assertEquals(listOf<String>(), result)
 
-        val retVal = CreditsCommandHandler().completeGive(args)
+        result = CreditsCommandHandler().completeGive(mockArgs(player1, arrayOf()))
+        Assert.assertEquals(listOf<String>(), result)
 
-        Assert.assertEquals(listOf("Player1"), retVal)
+        result = CreditsCommandHandler().completeGive(mockArgs(player2, arrayOf()))
+        Assert.assertEquals(listOf<String>(), result)
     }
 
     @Test
-    fun completeGive_singleArgProvidedCaseInsensitive_returnsCorrectUsername() {
-        `when`(args.args).thenReturn(arrayOf("play"))
+    fun completeGive_singleArg() {
+        var result = CreditsCommandHandler().completeGive(mockArgs(console, arrayOf("P")))
+        Assert.assertEquals(listOf("Player1"), result)
 
-        val retVal = CreditsCommandHandler().completeGive(args)
+        result = CreditsCommandHandler().completeGive(mockArgs(player1, arrayOf("S")))
+        Assert.assertEquals(listOf("Slayer"), result)
 
-        Assert.assertEquals(listOf("Player1"), retVal)
+        result = CreditsCommandHandler().completeGive(mockArgs(player2, arrayOf("P")))
+        Assert.assertEquals(listOf("Player1"), result)
     }
 
     @Test
-    fun completeGive_twoArgsProvided_returnsEmptyList() {
-        `when`(args.args).thenReturn(arrayOf("Player1", "2"))
+    fun completeGive_singleArgCaseInsensitive() {
+        var result = CreditsCommandHandler().completeGive(mockArgs(console, arrayOf("p")))
+        Assert.assertEquals(listOf("Player1"), result)
 
-        val retVal = CreditsCommandHandler().completeGive(args)
+        result = CreditsCommandHandler().completeGive(mockArgs(player1, arrayOf("s")))
+        Assert.assertEquals(listOf("Slayer"), result)
 
-        Assert.assertEquals(listOf<String>(), retVal)
-    }
-
-
-
-
-
-
-
-    @Test
-    fun completeTake_noArgsProvided_returnsEmptyList() {
-        `when`(args.args).thenReturn(arrayOf())
-
-        val retVal = CreditsCommandHandler().completeTake(args)
-
-        Assert.assertEquals(listOf<String>(), retVal)
+        result = CreditsCommandHandler().completeGive(mockArgs(player2, arrayOf("p")))
+        Assert.assertEquals(listOf("Player1"), result)
     }
 
     @Test
-    fun completeTake_singleArgProvided_returnsCorrectUsername() {
-        `when`(args.args).thenReturn(arrayOf("P"))
+    fun completeGive_twoArgs() {
+        var result = CreditsCommandHandler().completeGive(mockArgs(console, arrayOf("Player1", "2")))
+        Assert.assertEquals(listOf<String>(), result)
 
-        val retVal = CreditsCommandHandler().completeTake(args)
+        result = CreditsCommandHandler().completeGive(mockArgs(player1, arrayOf("Slayer", "2")))
+        Assert.assertEquals(listOf<String>(), result)
 
-        Assert.assertEquals(listOf("Player1"), retVal)
+        result = CreditsCommandHandler().completeGive(mockArgs(player2, arrayOf("Player1", "2")))
+        Assert.assertEquals(listOf<String>(), result)
     }
 
     @Test
-    fun completeTake_singleArgProvidedCaseInsensitive_returnsCorrectUsername() {
-        `when`(args.args).thenReturn(arrayOf("play"))
+    fun handleTake_noArgs() {
+        CreditsCommandHandler().handleTake(mockArgs(console, arrayOf()))
+        verify(console).sendMessage("$errorTag You must specify both a player and an amount to take from that player.")
 
-        val retVal = CreditsCommandHandler().completeTake(args)
+        CreditsCommandHandler().handleTake(mockArgs(player1, arrayOf()))
+        verify(player1).sendMessage("$errorTag You must specify both a player and an amount to take from that player.")
 
-        Assert.assertEquals(listOf("Player1"), retVal)
+        CreditsCommandHandler().handleTake(mockArgs(player2, arrayOf()))
+        verify(player2).sendMessage("$errorTag You must specify both a player and an amount to take from that player.")
     }
 
     @Test
-    fun completeTake_twoArgsProvided_returnsEmptyList() {
-        `when`(args.args).thenReturn(arrayOf("Player1", "2"))
+    fun handleTake_singleArg() {
+        CreditsCommandHandler().handleTake(mockArgs(console, arrayOf("Player1")))
+        verify(console).sendMessage("$errorTag You must specify both a player and an amount to take from that player.")
 
-        val retVal = CreditsCommandHandler().completeTake(args)
+        CreditsCommandHandler().handleTake(mockArgs(player1, arrayOf("Slayer")))
+        verify(player1).sendMessage("$errorTag You must specify both a player and an amount to take from that player.")
 
-        Assert.assertEquals(listOf<String>(), retVal)
+        CreditsCommandHandler().handleTake(mockArgs(player2, arrayOf("Player1")))
+        verify(player2).sendMessage("$errorTag You must specify both a player and an amount to take from that player.")
+    }
+
+    @Test
+    fun handleTake_stringCreditAmount() {
+        CreditsCommandHandler().handleTake(mockArgs(console, arrayOf("Player1", "invalid")))
+        verify(console).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleTake(mockArgs(player1, arrayOf("Slayer", "invalid")))
+        verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleTake(mockArgs(player2, arrayOf("Player1", "invalid")))
+        verify(player2).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+    }
+
+    @Test
+    fun handleTake_negativeCreditAmount() {
+        CreditsCommandHandler().handleTake(mockArgs(console, arrayOf("Player1", "-1")))
+        verify(console).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleTake(mockArgs(player1, arrayOf("Slayer", "-1")))
+        verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleTake(mockArgs(player2, arrayOf("Player1", "-1")))
+        verify(player2).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+    }
+
+    @Test
+    fun handleTake_zeroCreditAmount() {
+        CreditsCommandHandler().handleTake(mockArgs(console, arrayOf("Player1", "0")))
+        verify(console).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleTake(mockArgs(player1, arrayOf("Slayer", "0")))
+        verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleTake(mockArgs(player2, arrayOf("Player1", "0")))
+        verify(player2).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+    }
+
+    @Test
+    fun handleTake_invalidPlayerName() {
+        CreditsCommandHandler().handleTake(mockArgs(console, arrayOf("invalid", "1")))
+        verify(console).sendMessage("$errorTag The specified player could not be found.")
+
+        CreditsCommandHandler().handleTake(mockArgs(player1, arrayOf("invalid", "1")))
+        verify(player1).sendMessage("$errorTag The specified player could not be found.")
+
+        CreditsCommandHandler().handleTake(mockArgs(player2, arrayOf("invalid", "1")))
+        verify(player2).sendMessage("$errorTag The specified player could not be found.")
+    }
+
+    @Test
+    fun handleTake_validArgs() {
+        CreditsCommandHandler().handleTake(mockArgs(console, arrayOf("Player1", "2")))
+        verify(console).sendMessage("$tag You have successfully taken 2 revival credits from Player1.")
+        Assert.assertEquals(3, PlayerData[player1].revivalCredits)
+
+        PlayerData[player2].revivalCredits = 4
+        CreditsCommandHandler().handleTake(mockArgs(player1, arrayOf("Slayer", "2")))
+        verify(player1).sendMessage("$tag You have successfully taken 2 revival credits from Slayer.")
+        Assert.assertEquals(2, PlayerData[player2].revivalCredits)
+
+        CreditsCommandHandler().handleTake(mockArgs(player2, arrayOf("Player1", "2")))
+        verify(player2).sendMessage("$tag You have successfully taken 2 revival credits from Player1.")
+        Assert.assertEquals(1, PlayerData[player1].revivalCredits)
+    }
+
+    @Test
+    fun handleTake_validArgsCaseInsensitive() {
+        CreditsCommandHandler().handleTake(mockArgs(console, arrayOf("player1", "2")))
+        verify(console).sendMessage("$tag You have successfully taken 2 revival credits from Player1.")
+        Assert.assertEquals(3, PlayerData[player1].revivalCredits)
+
+        PlayerData[player2].revivalCredits = 4
+        CreditsCommandHandler().handleTake(mockArgs(player1, arrayOf("slayer", "2")))
+        verify(player1).sendMessage("$tag You have successfully taken 2 revival credits from Slayer.")
+        Assert.assertEquals(2, PlayerData[player2].revivalCredits)
+
+        CreditsCommandHandler().handleTake(mockArgs(player2, arrayOf("player1", "2")))
+        verify(player2).sendMessage("$tag You have successfully taken 2 revival credits from Player1.")
+        Assert.assertEquals(1, PlayerData[player1].revivalCredits)
+    }
+
+    @Test
+    fun handleTake_validArgsTakeAll() {
+        CreditsCommandHandler().handleTake(mockArgs(console, arrayOf("Player1", "10")))
+        verify(console).sendMessage("$tag You have successfully taken all of Player1's revival credits.")
+        Assert.assertEquals(0, PlayerData[player1].revivalCredits)
+
+        CreditsCommandHandler().handleTake(mockArgs(player1, arrayOf("Slayer", "10")))
+        verify(player1).sendMessage("$tag You have successfully taken all of Slayer's revival credits.")
+        Assert.assertEquals(0, PlayerData[player2].revivalCredits)
+
+        PlayerData[player1].revivalCredits = 5
+        CreditsCommandHandler().handleTake(mockArgs(player2, arrayOf("Player1", "10")))
+        verify(player2).sendMessage("$tag You have successfully taken all of Player1's revival credits.")
+        Assert.assertEquals(0, PlayerData[player1].revivalCredits)
+    }
+    
+    @Test
+    fun completeTake_noArgs() {
+        var result = CreditsCommandHandler().completeTake(mockArgs(console, arrayOf()))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeTake(mockArgs(player1, arrayOf()))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeTake(mockArgs(player2, arrayOf()))
+        Assert.assertEquals(listOf<String>(), result)
+    }
+
+    @Test
+    fun completeTake_singleArg() {
+        var result = CreditsCommandHandler().completeTake(mockArgs(console, arrayOf("P")))
+        Assert.assertEquals(listOf("Player1"), result)
+
+        result = CreditsCommandHandler().completeTake(mockArgs(player1, arrayOf("S")))
+        Assert.assertEquals(listOf("Slayer"), result)
+
+        result = CreditsCommandHandler().completeTake(mockArgs(player2, arrayOf("P")))
+        Assert.assertEquals(listOf("Player1"), result)
+    }
+
+    @Test
+    fun completeTake_singleArgCaseInsensitive() {
+        var result = CreditsCommandHandler().completeTake(mockArgs(console, arrayOf("p")))
+        Assert.assertEquals(listOf("Player1"), result)
+
+        result = CreditsCommandHandler().completeTake(mockArgs(player1, arrayOf("s")))
+        Assert.assertEquals(listOf("Slayer"), result)
+
+        result = CreditsCommandHandler().completeTake(mockArgs(player2, arrayOf("p")))
+        Assert.assertEquals(listOf("Player1"), result)
+    }
+
+    @Test
+    fun completeTake_twoArgs() {
+        var result = CreditsCommandHandler().completeTake(mockArgs(console, arrayOf("Player1", "2")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeTake(mockArgs(player1, arrayOf("Slayer", "2")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeTake(mockArgs(player2, arrayOf("Player1", "2")))
+        Assert.assertEquals(listOf<String>(), result)
     }
 }
