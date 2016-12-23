@@ -136,6 +136,18 @@ class CreditsCommandHandlerTest {
     }
 
     @Test
+    fun completeDefault_singleArgNoMatch() {
+        var result = CreditsCommandHandler().completeDefault(mockArgs(console, arrayOf("z")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeDefault(mockArgs(player1, arrayOf("z")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeDefault(mockArgs(player2, arrayOf("z")))
+        Assert.assertEquals(listOf<String>(), result)
+    }
+
+    @Test
     fun completeDefault_subcommandOnly() {
         var result = CreditsCommandHandler().completeDefault(mockArgs(console, arrayOf("g")))
         Assert.assertEquals(listOf("give"), result)
@@ -184,6 +196,30 @@ class CreditsCommandHandlerTest {
     }
 
     @Test
+    fun completeDefault_extraArg() {
+        var result = CreditsCommandHandler().completeDefault(mockArgs(console, arrayOf("Player1", "P")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeDefault(mockArgs(player1, arrayOf("Slayer", "S")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeDefault(mockArgs(player2, arrayOf("Player1", "P")))
+        Assert.assertEquals(listOf<String>(), result)
+    }
+
+    @Test
+    fun completeDefault_extraArgs() {
+        var result = CreditsCommandHandler().completeDefault(mockArgs(console, arrayOf("Player1", "P", "S")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeDefault(mockArgs(player1, arrayOf("Slayer", "S", "P")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeDefault(mockArgs(player2, arrayOf("Player1", "P", "S")))
+        Assert.assertEquals(listOf<String>(), result)
+    }
+
+    @Test
     fun handleSend_noArgs() {
         CreditsCommandHandler().handleSend(mockArgs(player1, arrayOf()))
         verify(player1).sendMessage("$errorTag You must specify both a player and an amount to send to that player.")
@@ -225,6 +261,15 @@ class CreditsCommandHandlerTest {
         verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
 
         CreditsCommandHandler().handleSend(mockArgs(player2, arrayOf("Player1", "0")))
+        verify(player2).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+    }
+
+    @Test
+    fun handleSend_decimalCreditAmount() {
+        CreditsCommandHandler().handleSend(mockArgs(player1, arrayOf("Slayer", "1.5")))
+        verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleSend(mockArgs(player2, arrayOf("Player1", "1.5")))
         verify(player2).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
     }
 
@@ -282,6 +327,15 @@ class CreditsCommandHandlerTest {
     }
 
     @Test
+    fun completeSend_singleArgNoMatch() {
+        var result = CreditsCommandHandler().completeSend(mockArgs(player1, arrayOf("z")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeSend(mockArgs(player2, arrayOf("z")))
+        Assert.assertEquals(listOf<String>(), result)
+    }
+
+    @Test
     fun completeSend_singleArg() {
         var result = CreditsCommandHandler().completeSend(mockArgs(player1, arrayOf("S")))
         Assert.assertEquals(listOf("Slayer"), result)
@@ -305,6 +359,24 @@ class CreditsCommandHandlerTest {
         Assert.assertEquals(listOf<String>(), result)
 
         result = CreditsCommandHandler().completeSend(mockArgs(player2, arrayOf("Player1", "2")))
+        Assert.assertEquals(listOf<String>(), result)
+    }
+
+    @Test
+    fun completeSend_extraArg() {
+        var result = CreditsCommandHandler().completeSend(mockArgs(player1, arrayOf("Slayer", "2", "S")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeSend(mockArgs(player2, arrayOf("Player1", "2", "P")))
+        Assert.assertEquals(listOf<String>(), result)
+    }
+
+    @Test
+    fun completeSend_extraArgs() {
+        var result = CreditsCommandHandler().completeSend(mockArgs(player1, arrayOf("Slayer", "2", "S", "P")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeSend(mockArgs(player2, arrayOf("Player1", "2", "P", "S")))
         Assert.assertEquals(listOf<String>(), result)
     }
 
@@ -369,6 +441,18 @@ class CreditsCommandHandlerTest {
     }
 
     @Test
+    fun handleGive_decimalCreditAmount() {
+        CreditsCommandHandler().handleGive(mockArgs(console, arrayOf("Player1", "1.5")))
+        verify(console).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleGive(mockArgs(player1, arrayOf("Slayer", "1.5")))
+        verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleGive(mockArgs(player2, arrayOf("Player1", "1.5")))
+        verify(player2).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+    }
+
+    @Test
     fun handleGive_invalidPlayerName() {
         CreditsCommandHandler().handleGive(mockArgs(console, arrayOf("invalid", "1")))
         verify(console).sendMessage("$errorTag The specified player could not be found.")
@@ -423,6 +507,18 @@ class CreditsCommandHandlerTest {
     }
 
     @Test
+    fun completeGive_singleArgNoMatch() {
+        var result = CreditsCommandHandler().completeGive(mockArgs(console, arrayOf("z")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeGive(mockArgs(player1, arrayOf("z")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeGive(mockArgs(player2, arrayOf("z")))
+        Assert.assertEquals(listOf<String>(), result)
+    }
+
+    @Test
     fun completeGive_singleArg() {
         var result = CreditsCommandHandler().completeGive(mockArgs(console, arrayOf("P")))
         Assert.assertEquals(listOf("Player1"), result)
@@ -455,6 +551,30 @@ class CreditsCommandHandlerTest {
         Assert.assertEquals(listOf<String>(), result)
 
         result = CreditsCommandHandler().completeGive(mockArgs(player2, arrayOf("Player1", "2")))
+        Assert.assertEquals(listOf<String>(), result)
+    }
+
+    @Test
+    fun completeGive_extraArg() {
+        var result = CreditsCommandHandler().completeGive(mockArgs(console, arrayOf("Player1", "2", "P")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeGive(mockArgs(player1, arrayOf("Slayer", "2", "S")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeGive(mockArgs(player2, arrayOf("Player1", "2", "P")))
+        Assert.assertEquals(listOf<String>(), result)
+    }
+
+    @Test
+    fun completeGive_extraArgs() {
+        var result = CreditsCommandHandler().completeGive(mockArgs(console, arrayOf("Player1", "2", "P", "S")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeGive(mockArgs(player1, arrayOf("Slayer", "2", "S", "P")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeGive(mockArgs(player2, arrayOf("Player1", "2", "P", "S")))
         Assert.assertEquals(listOf<String>(), result)
     }
 
@@ -515,6 +635,18 @@ class CreditsCommandHandlerTest {
         verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
 
         CreditsCommandHandler().handleTake(mockArgs(player2, arrayOf("Player1", "0")))
+        verify(player2).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+    }
+
+    @Test
+    fun handleTake_decimalCreditAmount() {
+        CreditsCommandHandler().handleTake(mockArgs(console, arrayOf("Player1", "1.5")))
+        verify(console).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleTake(mockArgs(player1, arrayOf("Slayer", "1.5")))
+        verify(player1).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
+
+        CreditsCommandHandler().handleTake(mockArgs(player2, arrayOf("Player1", "1.5")))
         verify(player2).sendMessage("$errorTag The amount of credits specified must be a positive integer value.")
     }
 
@@ -591,6 +723,18 @@ class CreditsCommandHandlerTest {
     }
 
     @Test
+    fun completeTake_singleArgNoMatch() {
+        var result = CreditsCommandHandler().completeTake(mockArgs(console, arrayOf("z")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeTake(mockArgs(player1, arrayOf("z")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeTake(mockArgs(player2, arrayOf("z")))
+        Assert.assertEquals(listOf<String>(), result)
+    }
+
+    @Test
     fun completeTake_singleArg() {
         var result = CreditsCommandHandler().completeTake(mockArgs(console, arrayOf("P")))
         Assert.assertEquals(listOf("Player1"), result)
@@ -623,6 +767,30 @@ class CreditsCommandHandlerTest {
         Assert.assertEquals(listOf<String>(), result)
 
         result = CreditsCommandHandler().completeTake(mockArgs(player2, arrayOf("Player1", "2")))
+        Assert.assertEquals(listOf<String>(), result)
+    }
+
+    @Test
+    fun completeTake_extraArg() {
+        var result = CreditsCommandHandler().completeTake(mockArgs(console, arrayOf("Player1", "2", "P")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeTake(mockArgs(player1, arrayOf("Slayer", "2", "S")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeTake(mockArgs(player2, arrayOf("Player1", "2", "P")))
+        Assert.assertEquals(listOf<String>(), result)
+    }
+
+    @Test
+    fun completeTake_extraArgs() {
+        var result = CreditsCommandHandler().completeTake(mockArgs(console, arrayOf("Player1", "2", "P", "S")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeTake(mockArgs(player1, arrayOf("Slayer", "2", "S", "P")))
+        Assert.assertEquals(listOf<String>(), result)
+
+        result = CreditsCommandHandler().completeTake(mockArgs(player2, arrayOf("Player1", "2", "P", "S")))
         Assert.assertEquals(listOf<String>(), result)
     }
 }
