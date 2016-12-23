@@ -40,10 +40,9 @@ import java.util.*
 
 @RunWith(MockitoJUnitRunner::class)
 class CreditsCommandHandlerTest {
-    var console = mock(ConsoleCommandSender::class.java)
-    var player1 = mock(Player::class.java)
-    var player2 = mock(Player::class.java)
-    var args = mock(Arguments::class.java)
+    var console: ConsoleCommandSender = mock(ConsoleCommandSender::class.java)
+    var player1: Player = mock(Player::class.java)
+    var player2: Player = mock(Player::class.java)
 
     @Before
     fun setup() {
@@ -62,8 +61,6 @@ class CreditsCommandHandlerTest {
         `when`(player2.uniqueId).thenReturn(UUID.fromString("00000000-0000-0000-0000-000000000002"))
         `when`(player2.hasPermission("deathban.credits.check.others")).thenReturn(false)
         PlayerData[player2].revivalCredits = 1
-
-        args = mock(Arguments::class.java)
     }
 
     private fun mockArgs(sender: CommandSender, args: Array<String>) : Arguments {
